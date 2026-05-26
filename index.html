@@ -1,0 +1,647 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>💍 우리의 결혼 준비</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body {
+  font-family: 'Noto Sans KR', -apple-system, sans-serif;
+  background: linear-gradient(180deg, #fdf6f0 0%, #faeae0 100%);
+  min-height: 100vh;
+  color: #2c2c2a;
+  padding: 1rem;
+}
+.container { max-width: 720px; margin: 0 auto; }
+
+/* Login screen */
+.login-screen {
+  background: white;
+  border-radius: 20px;
+  padding: 3rem 2rem;
+  margin-top: 3rem;
+  text-align: center;
+  box-shadow: 0 10px 40px rgba(216, 90, 48, 0.08);
+}
+.login-screen h1 { font-size: 28px; margin-bottom: 8px; }
+.login-screen p { color: #888; margin-bottom: 2rem; font-size: 14px; }
+.login-input {
+  width: 100%;
+  padding: 14px 16px;
+  font-size: 16px;
+  border: 1.5px solid #f0d4c4;
+  border-radius: 12px;
+  margin-bottom: 12px;
+  font-family: inherit;
+  outline: none;
+  transition: border-color 0.2s;
+}
+.login-input:focus { border-color: #d85a30; }
+.login-btn {
+  width: 100%;
+  padding: 14px;
+  background: #d85a30;
+  color: white;
+  border: none;
+  border-radius: 12px;
+  font-size: 16px;
+  font-weight: 500;
+  cursor: pointer;
+  font-family: inherit;
+  transition: background 0.2s;
+}
+.login-btn:hover { background: #b94821; }
+.login-hint {
+  margin-top: 1.5rem;
+  font-size: 13px;
+  color: #aaa;
+  line-height: 1.6;
+}
+
+/* Main app */
+.header {
+  background: white;
+  border-radius: 20px;
+  padding: 1.5rem;
+  margin-bottom: 1rem;
+  box-shadow: 0 4px 20px rgba(216, 90, 48, 0.06);
+}
+.header-top { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 1rem; }
+.header h1 { font-size: 22px; font-weight: 600; }
+.header .dday { font-size: 13px; color: #d85a30; margin-top: 4px; font-weight: 500; }
+.couple-info { font-size: 12px; color: #999; }
+.logout-btn {
+  background: none;
+  border: 1px solid #eee;
+  padding: 6px 12px;
+  border-radius: 8px;
+  font-size: 12px;
+  cursor: pointer;
+  color: #999;
+  font-family: inherit;
+}
+.sync-status {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 11px;
+  color: #1d9e75;
+  margin-top: 4px;
+}
+.sync-dot { width: 6px; height: 6px; border-radius: 50%; background: #1d9e75; }
+
+.stats {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 10px;
+  margin-bottom: 12px;
+}
+.stat {
+  background: #faf3ee;
+  border-radius: 12px;
+  padding: 12px;
+  text-align: center;
+}
+.stat-label { font-size: 11px; color: #999; margin-bottom: 4px; }
+.stat-num { font-size: 20px; font-weight: 600; }
+.progress-bar {
+  background: #f5e6db;
+  border-radius: 999px;
+  height: 8px;
+  overflow: hidden;
+}
+.progress-fill {
+  height: 100%;
+  background: linear-gradient(90deg, #d85a30, #f0997b);
+  border-radius: 999px;
+  transition: width 0.4s;
+}
+
+.category {
+  background: white;
+  border-radius: 16px;
+  margin-bottom: 12px;
+  overflow: hidden;
+  box-shadow: 0 2px 12px rgba(216, 90, 48, 0.04);
+}
+.cat-header {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 14px 16px;
+  cursor: pointer;
+  user-select: none;
+}
+.cat-icon { font-size: 22px; }
+.cat-title { font-size: 16px; font-weight: 500; flex: 1; }
+.cat-badge {
+  font-size: 12px;
+  padding: 3px 10px;
+  border-radius: 999px;
+  background: #f5e6db;
+  color: #993c1d;
+  font-weight: 500;
+}
+.cat-badge.done { background: #e1f5ee; color: #0f6e56; }
+.cat-chevron { font-size: 14px; color: #ccc; transition: transform 0.2s; }
+.collapsed .cat-chevron { transform: rotate(-90deg); }
+.collapsed .cat-body { display: none; }
+.cat-body { border-top: 1px solid #f5ebe2; }
+
+.item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 16px;
+  border-bottom: 1px solid #faf3ee;
+  cursor: pointer;
+  transition: background 0.15s;
+}
+.item:last-of-type { border-bottom: none; }
+.item:hover { background: #fdf9f5; }
+.checkbox {
+  width: 20px;
+  height: 20px;
+  border-radius: 6px;
+  border: 2px solid #e0d0c0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  transition: all 0.15s;
+}
+.checkbox.checked {
+  background: #1d9e75;
+  border-color: #1d9e75;
+  color: white;
+}
+.item-text { font-size: 14px; flex: 1; line-height: 1.4; }
+.item-text.checked { color: #b5b0a8; text-decoration: line-through; }
+.item-tag {
+  font-size: 10px;
+  padding: 2px 8px;
+  border-radius: 999px;
+  background: #fde8de;
+  color: #993c1d;
+  font-weight: 500;
+}
+.item-meta { font-size: 11px; color: #b5b0a8; margin-top: 2px; }
+.item-delete {
+  background: none;
+  border: none;
+  color: #ccc;
+  cursor: pointer;
+  font-size: 16px;
+  padding: 4px;
+  opacity: 0;
+  transition: opacity 0.15s;
+}
+.item:hover .item-delete { opacity: 1; }
+.item-delete:hover { color: #d85a30; }
+
+.add-btn {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 12px 16px;
+  font-size: 13px;
+  color: #b5b0a8;
+  cursor: pointer;
+  width: 100%;
+  background: none;
+  border: none;
+  border-top: 1px solid #faf3ee;
+  text-align: left;
+  font-family: inherit;
+}
+.add-btn:hover { background: #fdf9f5; color: #d85a30; }
+.add-input-row { display: flex; gap: 8px; padding: 10px 16px; border-top: 1px solid #faf3ee; }
+.add-input-row input {
+  flex: 1;
+  font-size: 14px;
+  padding: 8px 12px;
+  border-radius: 10px;
+  border: 1.5px solid #f0d4c4;
+  outline: none;
+  font-family: inherit;
+}
+.add-input-row input:focus { border-color: #d85a30; }
+.add-input-row button {
+  font-size: 13px;
+  padding: 8px 14px;
+  border-radius: 10px;
+  border: none;
+  background: #d85a30;
+  color: white;
+  cursor: pointer;
+  font-family: inherit;
+}
+.add-input-row button.cancel { background: #f5e6db; color: #888; }
+
+.loading {
+  text-align: center;
+  padding: 3rem;
+  color: #b5b0a8;
+}
+
+@media (max-width: 480px) {
+  body { padding: 0.5rem; }
+  .header { padding: 1.25rem; border-radius: 16px; }
+  .header h1 { font-size: 19px; }
+  .stat-num { font-size: 18px; }
+}
+</style>
+</head>
+<body>
+<div class="container">
+
+  <!-- Login screen -->
+  <div id="login-screen" class="login-screen">
+    <h1>💍 우리의 결혼 준비</h1>
+    <p>두 분만 아는 커플 코드를 입력해 주세요</p>
+    <input type="text" id="couple-code-input" class="login-input" placeholder="커플 코드 (예: minsu-jiyeon-1115)" autocomplete="off">
+    <input type="text" id="name-input" class="login-input" placeholder="내 이름 (선택)" autocomplete="off">
+    <button class="login-btn" onclick="login()">시작하기</button>
+    <div class="login-hint">
+      💡 처음이라면 원하는 커플 코드를 만들어서 입력하세요.<br>
+      파트너에게 같은 코드를 알려주면 함께 사용할 수 있어요.
+    </div>
+  </div>
+
+  <!-- Main app (hidden initially) -->
+  <div id="app" style="display:none">
+    <div class="header">
+      <div class="header-top">
+        <div>
+          <h1>💍 우리의 결혼 준비</h1>
+          <div class="dday" id="dday">D-day 계산 중...</div>
+          <div class="couple-info" id="couple-info"></div>
+          <div class="sync-status"><span class="sync-dot"></span><span id="sync-text">실시간 연결됨</span></div>
+        </div>
+        <button class="logout-btn" onclick="logout()">로그아웃</button>
+      </div>
+
+      <div class="stats">
+        <div class="stat"><div class="stat-label">전체</div><div class="stat-num" id="total-count">0</div></div>
+        <div class="stat"><div class="stat-label">완료</div><div class="stat-num" id="done-count" style="color:#1d9e75">0</div></div>
+        <div class="stat"><div class="stat-label">남은 항목</div><div class="stat-num" id="remain-count" style="color:#d85a30">0</div></div>
+      </div>
+      <div class="progress-bar"><div class="progress-fill" id="progress" style="width:0%"></div></div>
+    </div>
+
+    <div id="categories"></div>
+  </div>
+</div>
+
+<!-- Firebase SDK -->
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+import { getFirestore, doc, setDoc, onSnapshot, getDoc } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+
+// ===== 여기에 본인의 Firebase 설정을 붙여넣으세요 =====
+const firebaseConfig = {
+  apiKey: "YOUR_API_KEY",
+  authDomain: "YOUR_PROJECT.firebaseapp.com",
+  projectId: "YOUR_PROJECT_ID",
+  storageBucket: "YOUR_PROJECT.appspot.com",
+  messagingSenderId: "YOUR_SENDER_ID",
+  appId: "YOUR_APP_ID"
+};
+// ====================================================
+
+const app = initializeApp(firebaseConfig);
+const db = getFirestore(app);
+
+// ===== 결혼 날짜 설정 (YYYY-MM-DD) =====
+const WEDDING_DATE = '2025-11-15';
+// =====================================
+
+const defaultData = [
+  { id: 'venue', title: '예식장 & 장소', icon: '💒', items: [
+    { id: 'v1', text: '예식장 후보 리스트업', tag: '필수' },
+    { id: 'v2', text: '예식장 방문 및 견적 비교', tag: '필수' },
+    { id: 'v3', text: '예식장 계약 및 날짜 확정', tag: '필수' },
+    { id: 'v4', text: '하객 수 확정 (양가 합산)', tag: '' },
+    { id: 'v5', text: '피로연 장소 결정', tag: '' },
+  ]},
+  { id: 'photo', title: '스튜디오 & 사진', icon: '📸', items: [
+    { id: 'p1', text: '웨딩 스튜디오 선정 및 계약', tag: '필수' },
+    { id: 'p2', text: '본식 사진/영상 업체 계약', tag: '필수' },
+    { id: 'p3', text: '스튜디오 촬영 날짜 잡기', tag: '' },
+    { id: 'p4', text: '청첩장용 사진 선택', tag: '' },
+    { id: 'p5', text: '드레스 & 웨딩슈트 선택', tag: '필수' },
+  ]},
+  { id: 'invitation', title: '청첩장 & 하객', icon: '💌', items: [
+    { id: 'i1', text: '청첩장 디자인 및 인쇄', tag: '필수' },
+    { id: 'i2', text: '모바일 청첩장 제작', tag: '' },
+    { id: 'i3', text: '하객 명단 정리 (양가)', tag: '필수' },
+    { id: 'i4', text: '청첩장 발송 (결혼 1~2달 전)', tag: '필수' },
+  ]},
+  { id: 'honeymoon', title: '신혼여행', icon: '✈️', items: [
+    { id: 'h1', text: '신혼여행 국가/지역 결정', tag: '필수' },
+    { id: 'h2', text: '항공권 예약', tag: '필수' },
+    { id: 'h3', text: '호텔/숙소 예약', tag: '필수' },
+    { id: 'h4', text: '여권 유효기간 확인', tag: '' },
+    { id: 'h5', text: '여행자 보험 가입', tag: '' },
+  ]},
+  { id: 'home', title: '신혼집 & 살림', icon: '🏠', items: [
+    { id: 'ho1', text: '신혼집 구하기 (매매/전/월세)', tag: '필수' },
+    { id: 'ho2', text: '인테리어 / 도배 계획', tag: '' },
+    { id: 'ho3', text: '가전제품 구매 목록 작성', tag: '' },
+    { id: 'ho4', text: '혼수 목록 정리', tag: '' },
+    { id: 'ho5', text: '이사 날짜 확정', tag: '' },
+  ]},
+  { id: 'ceremony', title: '예식 당일 준비', icon: '🎊', items: [
+    { id: 'c1', text: '메이크업 & 헤어 예약', tag: '필수' },
+    { id: 'c2', text: '주례 / 사회자 섭외', tag: '필수' },
+    { id: 'c3', text: '축가 섭외', tag: '' },
+    { id: 'c4', text: '부케 & 꽃장식 결정', tag: '' },
+    { id: 'c5', text: '웨딩카 예약', tag: '' },
+    { id: 'c6', text: '혼인신고 서류 준비', tag: '필수' },
+  ]},
+  { id: 'budget', title: '예산 & 행정', icon: '💰', items: [
+    { id: 'b1', text: '전체 결혼 예산 계획', tag: '필수' },
+    { id: 'b2', text: '양가 상견례 날짜 확정', tag: '필수' },
+    { id: 'b3', text: '예단 / 예물 논의', tag: '' },
+    { id: 'b4', text: '혼인신고 제출', tag: '필수' },
+    { id: 'b5', text: '건강보험 등 서류 변경', tag: '' },
+  ]},
+];
+
+let coupleCode = null;
+let userName = null;
+let state = { checked: {}, custom: {}, lastUpdate: {} };
+let collapsed = {};
+let addingIn = {};
+let unsubscribe = null;
+let isApplyingRemote = false;
+
+// D-day 계산
+function updateDday() {
+  const wedding = new Date(WEDDING_DATE);
+  const today = new Date();
+  today.setHours(0,0,0,0);
+  const diff = Math.ceil((wedding - today) / (1000*60*60*24));
+  const el = document.getElementById('dday');
+  if (diff > 0) el.textContent = `💕 D-${diff} · ${WEDDING_DATE.replace(/-/g, '. ')}`;
+  else if (diff === 0) el.textContent = `🎉 오늘이 결혼식입니다!`;
+  else el.textContent = `💍 결혼 ${-diff}일째`;
+}
+
+// 로그인
+window.login = function() {
+  const code = document.getElementById('couple-code-input').value.trim().toLowerCase();
+  const name = document.getElementById('name-input').value.trim() || '익명';
+  if (!code) { alert('커플 코드를 입력해 주세요'); return; }
+  if (code.length < 4) { alert('커플 코드는 4자 이상이어야 합니다'); return; }
+
+  coupleCode = code;
+  userName = name;
+  localStorage.setItem('wedding_couple_code', code);
+  localStorage.setItem('wedding_user_name', name);
+
+  document.getElementById('login-screen').style.display = 'none';
+  document.getElementById('app').style.display = 'block';
+  document.getElementById('couple-info').textContent = `커플 코드: ${code} · ${name}`;
+
+  updateDday();
+  startSync();
+};
+
+window.logout = function() {
+  if (unsubscribe) unsubscribe();
+  localStorage.removeItem('wedding_couple_code');
+  localStorage.removeItem('wedding_user_name');
+  location.reload();
+};
+
+// Firestore 실시간 동기화
+function startSync() {
+  const docRef = doc(db, 'weddings', coupleCode);
+  unsubscribe = onSnapshot(docRef, (snap) => {
+    if (snap.exists()) {
+      isApplyingRemote = true;
+      state = snap.data();
+      if (!state.checked) state.checked = {};
+      if (!state.custom) state.custom = {};
+      if (!state.lastUpdate) state.lastUpdate = {};
+      render();
+      isApplyingRemote = false;
+      document.getElementById('sync-text').textContent = '실시간 연결됨';
+    } else {
+      // 첫 사용: 빈 문서 생성
+      setDoc(docRef, { checked: {}, custom: {}, lastUpdate: {} });
+    }
+  }, (err) => {
+    console.error(err);
+    document.getElementById('sync-text').textContent = '⚠️ 연결 끊김';
+  });
+}
+
+async function saveState() {
+  if (isApplyingRemote) return;
+  try {
+    const docRef = doc(db, 'weddings', coupleCode);
+    await setDoc(docRef, state, { merge: true });
+  } catch (e) {
+    console.error('저장 실패:', e);
+  }
+}
+
+function getData() {
+  return defaultData.map(cat => ({
+    ...cat,
+    items: [
+      ...cat.items,
+      ...((state.custom && state.custom[cat.id]) || [])
+    ]
+  }));
+}
+
+function isChecked(catId, itemId) {
+  return !!(state.checked && state.checked[`${catId}__${itemId}`]);
+}
+
+function getCheckedBy(catId, itemId) {
+  return state.lastUpdate && state.lastUpdate[`${catId}__${itemId}`];
+}
+
+window.toggleCheck = function(catId, itemId) {
+  const key = `${catId}__${itemId}`;
+  if (!state.checked) state.checked = {};
+  if (!state.lastUpdate) state.lastUpdate = {};
+
+  if (state.checked[key]) {
+    delete state.checked[key];
+    delete state.lastUpdate[key];
+  } else {
+    state.checked[key] = true;
+    state.lastUpdate[key] = { by: userName, at: new Date().toISOString() };
+  }
+  render();
+  saveState();
+};
+
+window.toggleCollapse = function(catId) {
+  collapsed[catId] = !collapsed[catId];
+  render();
+};
+
+window.startAdd = function(e, catId) {
+  e.stopPropagation();
+  addingIn[catId] = true;
+  render();
+};
+
+window.cancelAdd = function(catId) {
+  addingIn[catId] = false;
+  render();
+};
+
+window.submitAdd = function(catId) {
+  const inp = document.getElementById('new-item-' + catId);
+  const text = inp?.value?.trim();
+  if (!text) { addingIn[catId] = false; render(); return; }
+
+  if (!state.custom) state.custom = {};
+  if (!state.custom[catId]) state.custom[catId] = [];
+  const newId = 'custom_' + Date.now() + '_' + Math.random().toString(36).substr(2,5);
+  state.custom[catId].push({ id: newId, text, tag: '', by: userName });
+  addingIn[catId] = false;
+  render();
+  saveState();
+};
+
+window.deleteCustom = function(e, catId, itemId) {
+  e.stopPropagation();
+  if (!confirm('이 항목을 삭제할까요?')) return;
+  if (state.custom && state.custom[catId]) {
+    state.custom[catId] = state.custom[catId].filter(i => i.id !== itemId);
+  }
+  // 체크 기록도 삭제
+  const key = `${catId}__${itemId}`;
+  if (state.checked) delete state.checked[key];
+  if (state.lastUpdate) delete state.lastUpdate[key];
+  render();
+  saveState();
+};
+
+window.handleEnter = function(e, catId) {
+  if (e.key === 'Enter') window.submitAdd(catId);
+  if (e.key === 'Escape') window.cancelAdd(catId);
+};
+
+function formatTime(iso) {
+  if (!iso) return '';
+  const d = new Date(iso);
+  const now = new Date();
+  const diff = (now - d) / 1000;
+  if (diff < 60) return '방금';
+  if (diff < 3600) return Math.floor(diff/60) + '분 전';
+  if (diff < 86400) return Math.floor(diff/3600) + '시간 전';
+  return Math.floor(diff/86400) + '일 전';
+}
+
+function updateStats() {
+  const data = getData();
+  let total = 0, done = 0;
+  data.forEach(cat => cat.items.forEach(item => {
+    total++;
+    if (isChecked(cat.id, item.id)) done++;
+  }));
+  document.getElementById('total-count').textContent = total;
+  document.getElementById('done-count').textContent = done;
+  document.getElementById('remain-count').textContent = total - done;
+  const pct = total ? Math.round(done / total * 100) : 0;
+  document.getElementById('progress').style.width = pct + '%';
+}
+
+function render() {
+  updateStats();
+  const data = getData();
+  const container = document.getElementById('categories');
+  container.innerHTML = '';
+  data.forEach(cat => {
+    const checkedCount = cat.items.filter(i => isChecked(cat.id, i.id)).length;
+    const total = cat.items.length;
+    const allDone = total > 0 && checkedCount === total;
+    const isCollapsed = collapsed[cat.id];
+    const div = document.createElement('div');
+    div.className = 'category' + (isCollapsed ? ' collapsed' : '');
+    div.innerHTML = `
+      <div class="cat-header" onclick="toggleCollapse('${cat.id}')">
+        <span class="cat-icon">${cat.icon}</span>
+        <span class="cat-title">${cat.title}</span>
+        <span class="cat-badge ${allDone ? 'done' : ''}">${checkedCount}/${total}</span>
+        <span class="cat-chevron">▼</span>
+      </div>
+      <div class="cat-body">
+        ${cat.items.map(item => {
+          const checked = isChecked(cat.id, item.id);
+          const meta = checked ? getCheckedBy(cat.id, item.id) : null;
+          const isCustom = item.id.startsWith('custom_');
+          return `
+            <div class="item" onclick="toggleCheck('${cat.id}','${item.id}')">
+              <div class="checkbox ${checked ? 'checked' : ''}">
+                ${checked ? '✓' : ''}
+              </div>
+              <div style="flex:1; min-width:0;">
+                <div class="item-text ${checked ? 'checked' : ''}">${escapeHtml(item.text)}</div>
+                ${meta ? `<div class="item-meta">${escapeHtml(meta.by)} · ${formatTime(meta.at)}</div>` : ''}
+              </div>
+              ${item.tag ? `<span class="item-tag">${item.tag}</span>` : ''}
+              ${isCustom ? `<button class="item-delete" onclick="deleteCustom(event,'${cat.id}','${item.id}')">✕</button>` : ''}
+            </div>
+          `;
+        }).join('')}
+        ${addingIn[cat.id] ? `
+          <div class="add-input-row">
+            <input id="new-item-${cat.id}" placeholder="새 항목 입력 후 Enter" autofocus onkeydown="handleEnter(event,'${cat.id}')" />
+            <button onclick="submitAdd('${cat.id}')">추가</button>
+            <button class="cancel" onclick="cancelAdd('${cat.id}')">취소</button>
+          </div>
+        ` : `
+          <button class="add-btn" onclick="startAdd(event,'${cat.id}')">
+            + 항목 추가
+          </button>
+        `}
+      </div>
+    `;
+    container.appendChild(div);
+    if (addingIn[cat.id]) {
+      setTimeout(() => {
+        const inp = document.getElementById('new-item-' + cat.id);
+        if (inp) inp.focus();
+      }, 50);
+    }
+  });
+}
+
+function escapeHtml(s) {
+  return String(s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+}
+
+// 자동 로그인
+const savedCode = localStorage.getItem('wedding_couple_code');
+const savedName = localStorage.getItem('wedding_user_name');
+if (savedCode) {
+  document.getElementById('couple-code-input').value = savedCode;
+  if (savedName) document.getElementById('name-input').value = savedName;
+  // 자동으로 로그인 진행
+  setTimeout(() => window.login(), 100);
+}
+
+// Enter로 로그인
+document.getElementById('couple-code-input').addEventListener('keydown', e => {
+  if (e.key === 'Enter') window.login();
+});
+document.getElementById('name-input').addEventListener('keydown', e => {
+  if (e.key === 'Enter') window.login();
+});
+</script>
+</body>
+</html>
