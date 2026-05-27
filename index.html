@@ -471,7 +471,7 @@ body {
   .date-chip { font-size:9px;padding:3px 6px;min-height:26px; }
   .photo-thumb,.photo-add,.photo-uploading { width:64px;height:64px; }
   .budget-row { grid-template-columns:1fr 90px 24px;gap:8px; }
-  .budget-row .budget-date,.budget-row.header .col-date { display:none; }
+  .budget-date,.budget-cat { display:none; }
   .budget-summary { grid-template-columns:1fr; }
   .budget-stat { border-right:none;border-bottom:1px solid var(--sage-200); }
   .budget-stat:last-child { border-bottom:none; }
@@ -1470,7 +1470,7 @@ function renderBudget() {
   }
   let html = `
     <div class="budget-row header">
-      <div>날짜</div><div>내용</div><div>카테고리</div><div style="text-align:right">금액</div><div></div>
+      <div class="budget-date">날짜</div><div>내용</div><div class="budget-cat">카테고리</div><div style="text-align:right">금액</div><div></div>
     </div>
   `;
   sorted.forEach(e => {
@@ -1479,7 +1479,7 @@ function renderBudget() {
       <div class="budget-row" onclick="editBudgetEntry('${e.id}')">
         <div class="budget-date">${formatDate(e.date)}</div>
         <div class="budget-desc">${escapeHtml(e.desc)}${e.memo?`<div style="font-size:11px;color:var(--ink-light);margin-top:2px;">${escapeHtml(e.memo)}</div>`:''}</div>
-        <div style="font-size:11px;color:var(--ink-soft);">${escapeHtml(e.category)}</div>
+        <div class="budget-cat" style="font-size:11px;color:var(--ink-soft);">${escapeHtml(e.category)}</div>
         <div class="budget-amount ${isIncome?'income':'expense'}">${isIncome?'+':'-'}${formatWon(e.amount)}</div>
         <button class="budget-delete" onclick="deleteBudgetEntry(event,'${e.id}')">×</button>
       </div>
