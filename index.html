@@ -238,6 +238,10 @@ body {
 .item-row:hover .delete-btn { opacity:1; }
 .delete-btn:hover { color:var(--rose); }
 
+.item-actions {
+  display:flex;align-items:center;gap:6px;flex-shrink:0;
+}
+
 .item-extra {
   padding:0 1.5rem 14px 1.5rem;
   background:rgba(255,255,255,0.3);
@@ -458,7 +462,10 @@ body {
   .cat-header { padding:1rem 1.25rem;gap:12px; }
   .cat-num { font-size:17px;min-width:26px; }
   .cat-title { font-size:15px; }
-  .item-row { padding:12px 1rem;gap:8px; }
+  .item-row { padding:12px 1rem;gap:8px;flex-wrap:wrap;align-items:flex-start; }
+  .item-content { flex:1;min-width:0; }
+  .item-actions { width:100%;padding-left:26px;margin-top:4px;gap:6px; }
+  .item-row:hover .delete-btn { opacity:0.4; }
   .item-extra { padding:0 1rem 12px 1rem; }
   .action-btn { width:26px;height:26px; }
   .date-chip { font-size:9px;padding:3px 6px;min-height:26px; }
@@ -1325,11 +1332,13 @@ function render() {
                   <div class="item-text ${checked?'checked':''}">${escapeHtml(item.text)}</div>
                   ${meta?`<div class="item-meta">${escapeHtml(meta.by)} · ${formatTime(meta.at)}</div>`:''}
                 </div>
-                ${item.tag?`<span class="item-tag">${item.tag}</span>`:''}
-                ${memoIconHtml(cat.id, item.id)}
-                ${dueChipHtml(cat.id, item.id)}
-                ${photoIconHtml(cat.id, item.id)}
-                <button class="delete-btn" onclick="deleteItem(event,'${cat.id}','${item.id}')" aria-label="삭제">×</button>
+                <div class="item-actions">
+                  ${item.tag?`<span class="item-tag">${item.tag}</span>`:''}
+                  ${memoIconHtml(cat.id, item.id)}
+                  ${dueChipHtml(cat.id, item.id)}
+                  ${photoIconHtml(cat.id, item.id)}
+                  <button class="delete-btn" onclick="deleteItem(event,'${cat.id}','${item.id}')" aria-label="삭제">×</button>
+                </div>
               </div>
               ${expandedHtml(cat.id, item.id)}
             </div>
