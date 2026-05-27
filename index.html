@@ -12,16 +12,25 @@
   --sage-400:#94a87f;--sage-500:#758d62;--sage-600:#5c724b;--sage-700:#485a3d;
   --sage-800:#3a4a32;--sage-900:#2a3624;
   --cream:#faf8f3;--ink:#2c2c2a;--ink-soft:#6b6b66;--ink-light:#a8a8a3;
-  --rose:#c9a896;
+  --rose:#c9a896;--amber-bg:#fdf8f0;--amber-border:#f0c070;--amber-text:#8a6020;
+  --red-bg:#fff0f0;--red-border:#f5c6c6;--red-text:#9b3333;
   --apple-font:-apple-system,BlinkMacSystemFont,"SF Pro Display","SF Pro Text","Apple SD Gothic Neo","Pretendard","Helvetica Neue",Arial,sans-serif;
 }
 body {
   font-family:var(--apple-font);
   background:var(--cream);
-  min-height:100vh;
-  color:var(--ink);
-  -webkit-font-smoothing:antialiased;
-  letter-spacing:-0.01em;
+  min-height:100vh;color:var(--ink);
+  -webkit-font-smoothing:antialiased;letter-spacing:-0.01em;
+  position:relative;
+}
+.bg-image {
+  position:fixed;top:0;left:0;right:0;bottom:0;
+  background-size:cover;background-position:center;
+  z-index:-2;opacity:0.3;
+}
+.bg-overlay {
+  position:fixed;top:0;left:0;right:0;bottom:0;
+  background:var(--cream);opacity:0.7;z-index:-1;
 }
 .botanical-bg {
   position:fixed;top:0;left:0;width:100%;height:100%;
@@ -71,19 +80,19 @@ body {
 .hero .venue { font-size:13px;color:var(--sage-600);letter-spacing:0.15em; }
 .hero-meta {
   display:flex;justify-content:center;align-items:center;
-  gap:24px;margin-top:1.5rem;
+  gap:20px;margin-top:1.5rem;
   font-size:11px;color:var(--ink-light);
   letter-spacing:0.15em;text-transform:uppercase;flex-wrap:wrap;
 }
 .sync-indicator { display:inline-flex;align-items:center;gap:6px; }
 .sync-dot { width:6px;height:6px;border-radius:50%;background:var(--sage-500);animation:pulse 2s ease-in-out infinite; }
 @keyframes pulse { 0%,100%{opacity:1}50%{opacity:0.4} }
-.logout-btn {
+.icon-action {
   background:none;border:none;color:var(--ink-light);
   font-size:11px;letter-spacing:0.15em;text-transform:uppercase;
   cursor:pointer;font-family:inherit;padding:4px 8px;
 }
-.logout-btn:hover { color:var(--sage-700); }
+.icon-action:hover { color:var(--sage-700); }
 
 /* TABS */
 .tabs {
@@ -103,90 +112,57 @@ body {
 .tab-content { display:none; }
 .tab-content.active { display:block; }
 
-/* ============ TIMELINE ============ */
-.timeline-header {
-  display:flex;align-items:baseline;justify-content:space-between;
-  margin-bottom:1.5rem;
-}
+/* TIMELINE */
+.timeline-header { display:flex;align-items:baseline;justify-content:space-between;margin-bottom:1.5rem; }
 .timeline-header h2 { font-size:22px;font-weight:300;color:var(--sage-800);letter-spacing:-0.02em; }
 .timeline-header small { font-size:11px;color:var(--ink-light);letter-spacing:0.15em;text-transform:uppercase; }
-
-.timeline-phase {
-  margin-bottom:2rem;
-}
-.phase-label {
-  display:flex;align-items:center;gap:12px;
-  margin-bottom:1rem;
-}
+.timeline-phase { margin-bottom:2rem; }
+.phase-label { display:flex;align-items:center;gap:12px;margin-bottom:1rem; }
 .phase-badge {
   display:inline-flex;align-items:center;
   padding:4px 14px;font-size:10px;font-weight:500;
-  letter-spacing:0.2em;text-transform:uppercase;
-  border:1px solid;
+  letter-spacing:0.2em;text-transform:uppercase;border:1px solid;
 }
-.phase-badge.urgent { background:#fef3f2;border-color:#f5c6c6;color:#9b3333; }
-.phase-badge.soon   { background:#fdf8f0;border-color:#f0d9b5;color:#8a6020; }
-.phase-badge.later  { background:var(--sage-50);border-color:var(--sage-200);color:var(--sage-700); }
+.phase-badge.urgent { background:var(--red-bg);border-color:var(--red-border);color:var(--red-text); }
+.phase-badge.soon { background:var(--amber-bg);border-color:var(--amber-border);color:var(--amber-text); }
+.phase-badge.later { background:var(--sage-50);border-color:var(--sage-200);color:var(--sage-700); }
 .phase-badge.done-phase { background:#f0f7f0;border-color:#c3dfc3;color:#2e6b2e; }
-
 .phase-line { flex:1;height:1px;background:var(--sage-200); }
-
 .timeline-card {
-  background:rgba(255,255,255,0.7);
-  border:1px solid var(--sage-200);
-  margin-bottom:8px;
-  display:flex;align-items:center;
-  padding:14px 1.25rem;
-  gap:14px;
-  cursor:pointer;
+  background:rgba(255,255,255,0.75);border:1px solid var(--sage-200);
+  margin-bottom:8px;display:flex;align-items:center;
+  padding:14px 1.25rem;gap:14px;cursor:pointer;
   transition:border-color 0.2s,background 0.2s;
 }
 .timeline-card:hover { border-color:var(--sage-400);background:rgba(255,255,255,0.9); }
-.timeline-card.done-card {
-  opacity:0.55;
-  background:rgba(245,247,243,0.6);
-}
+.timeline-card.done-card { opacity:0.55;background:rgba(245,247,243,0.6); }
 .tl-check {
-  width:20px;height:20px;
-  border:1px solid var(--sage-400);
+  width:20px;height:20px;border:1px solid var(--sage-400);
   display:flex;align-items:center;justify-content:center;
   flex-shrink:0;transition:all 0.2s;background:white;
 }
 .tl-check.checked { background:var(--sage-700);border-color:var(--sage-700); }
 .tl-check.checked svg { width:11px;height:11px;stroke:white;stroke-width:2.5;fill:none; }
 .tl-body { flex:1;min-width:0; }
-.tl-title {
-  font-size:14px;color:var(--ink);font-weight:400;line-height:1.4;
-  transition:color 0.2s;
-}
+.tl-title { font-size:14px;color:var(--ink);font-weight:400;line-height:1.4; }
 .tl-title.done-text { color:var(--ink-light);text-decoration:line-through;text-decoration-color:var(--sage-400); }
 .tl-meta { font-size:11px;color:var(--ink-light);margin-top:3px; }
 .tl-cat {
   font-size:9px;padding:2px 10px;
   background:var(--sage-100);color:var(--sage-700);
-  letter-spacing:0.15em;text-transform:uppercase;
-  white-space:nowrap;
+  letter-spacing:0.15em;text-transform:uppercase;white-space:nowrap;
 }
-.tl-time {
-  font-size:11px;color:var(--ink-light);
-  text-align:right;white-space:nowrap;
-  letter-spacing:0.05em;min-width:52px;
-}
-.tl-time.urgent-time { color:#9b3333;font-weight:500; }
-.tl-time.soon-time { color:#8a6020; }
+.tl-time { font-size:11px;color:var(--ink-light);text-align:right;white-space:nowrap;min-width:52px; }
+.tl-time.urgent-time { color:var(--red-text);font-weight:500; }
+.tl-time.soon-time { color:var(--amber-text); }
+.timeline-empty { text-align:center;padding:3rem;color:var(--ink-light);font-size:14px;background:rgba(255,255,255,0.5);border:1px solid var(--sage-200); }
 
-.timeline-empty {
-  text-align:center;padding:3rem;
-  color:var(--ink-light);font-size:14px;
-  background:rgba(255,255,255,0.5);border:1px solid var(--sage-200);
-}
-
-/* ============ CHECKLIST ============ */
+/* CHECKLIST */
 .section-title { text-align:center;font-size:26px;font-weight:300;color:var(--sage-800);margin:3rem 0 1.5rem;letter-spacing:-0.02em; }
 .section-subtitle { text-align:center;font-size:11px;color:var(--ink-light);letter-spacing:0.3em;text-transform:uppercase;margin-bottom:2rem; }
 
 .category {
-  background:rgba(255,255,255,0.65);
+  background:rgba(255,255,255,0.7);
   border:1px solid var(--sage-200);
   margin-bottom:1rem;overflow:hidden;transition:border-color 0.2s;
 }
@@ -204,28 +180,129 @@ body {
 .collapsed .cat-body { display:none; }
 .cat-body { border-top:1px solid var(--sage-200);background:rgba(255,255,255,0.4); }
 
-.item {
-  display:flex;align-items:center;gap:14px;
-  padding:14px 1.5rem;border-bottom:1px solid var(--sage-100);
-  cursor:pointer;transition:background 0.15s;
+.item-wrap { border-bottom:1px solid var(--sage-100); }
+.item-wrap:last-of-type { border-bottom:none; }
+
+.item-row {
+  display:flex;align-items:center;gap:10px;
+  padding:14px 1.5rem;
+  transition:background 0.15s;
 }
-.item:last-of-type { border-bottom:none; }
-.item:hover { background:var(--sage-50); }
+.item-row:hover { background:var(--sage-50); }
 .checkbox {
   width:18px;height:18px;border:1px solid var(--sage-400);
   display:flex;align-items:center;justify-content:center;
-  flex-shrink:0;transition:all 0.2s;background:white;
+  flex-shrink:0;transition:all 0.2s;background:white;cursor:pointer;
 }
 .checkbox.checked { background:var(--sage-700);border-color:var(--sage-700); }
 .checkbox.checked svg { width:11px;height:11px;stroke:white;stroke-width:2.5;fill:none; }
-.item-content { flex:1;min-width:0; }
+.item-content { flex:1;min-width:0;cursor:pointer; }
 .item-text { font-size:14px;color:var(--ink);font-weight:400;line-height:1.5;transition:color 0.2s; }
 .item-text.checked { color:var(--ink-light);text-decoration:line-through;text-decoration-color:var(--sage-400); }
 .item-meta { font-size:11px;color:var(--ink-light);margin-top:4px;font-style:italic; }
 .item-tag { font-size:9px;padding:3px 10px;background:var(--sage-100);color:var(--sage-700);letter-spacing:0.15em;text-transform:uppercase;font-weight:500; }
-.item-delete { background:none;border:none;color:var(--ink-light);cursor:pointer;font-size:14px;padding:4px 8px;opacity:0;transition:all 0.15s; }
-.item:hover .item-delete { opacity:1; }
-.item-delete:hover { color:var(--rose); }
+
+.action-btn {
+  width:28px;height:28px;
+  display:flex;align-items:center;justify-content:center;
+  border:1px solid var(--sage-200);background:white;
+  cursor:pointer;flex-shrink:0;
+  transition:all 0.2s;color:var(--sage-500);
+  border-radius:0;font-family:inherit;
+}
+.action-btn:hover { border-color:var(--sage-400);color:var(--sage-700); }
+.action-btn.active { background:var(--sage-100);border-color:var(--sage-400);color:var(--sage-800); }
+.action-btn svg { width:14px;height:14px;stroke:currentColor;stroke-width:1.5;fill:none; }
+
+.date-chip {
+  display:inline-flex;align-items:center;
+  font-size:10px;padding:4px 8px;
+  border:1px solid var(--sage-200);background:white;
+  color:var(--ink-soft);letter-spacing:0.05em;white-space:nowrap;
+  cursor:pointer;font-family:inherit;
+  font-feature-settings:"tnum";
+  min-height:28px;
+}
+.date-chip:hover { border-color:var(--sage-400);color:var(--sage-700); }
+.date-chip.has-date { background:var(--amber-bg);border-color:var(--amber-border);color:var(--amber-text); }
+.date-chip.overdue { background:var(--red-bg);border-color:var(--red-border);color:var(--red-text);font-weight:500; }
+.date-chip.urgent { background:var(--red-bg);border-color:var(--red-border);color:var(--red-text); }
+
+.delete-btn {
+  width:24px;height:24px;
+  display:flex;align-items:center;justify-content:center;
+  border:none;background:none;cursor:pointer;
+  color:var(--ink-light);font-size:18px;flex-shrink:0;
+  opacity:0.4;transition:all 0.15s;font-weight:300;
+}
+.item-row:hover .delete-btn { opacity:1; }
+.delete-btn:hover { color:var(--rose); }
+
+.item-extra {
+  padding:0 1.5rem 14px 1.5rem;
+  background:rgba(255,255,255,0.3);
+}
+
+.memo-area {
+  width:100%;padding:8px 12px;
+  border:1px solid var(--sage-300);background:white;
+  font-size:13px;color:var(--ink);font-family:inherit;
+  resize:vertical;outline:none;min-height:60px;
+  border-radius:0;margin-bottom:10px;line-height:1.5;
+  transition:border-color 0.2s;
+}
+.memo-area:focus { border-color:var(--sage-600); }
+.memo-saved-row {
+  display:flex;align-items:center;justify-content:space-between;
+  font-size:11px;color:var(--ink-light);margin-bottom:10px;
+}
+.memo-saved-row button {
+  background:var(--sage-700);color:white;border:none;
+  padding:6px 14px;font-size:10px;font-family:inherit;
+  letter-spacing:0.2em;text-transform:uppercase;cursor:pointer;
+}
+
+.photo-section { margin-top:10px; }
+.photo-section-label {
+  font-size:10px;color:var(--ink-soft);
+  letter-spacing:0.2em;text-transform:uppercase;
+  margin-bottom:8px;
+}
+.photo-row { display:flex;gap:8px;flex-wrap:wrap; }
+.photo-thumb {
+  width:72px;height:72px;
+  border:1px solid var(--sage-200);
+  position:relative;cursor:pointer;overflow:hidden;
+}
+.photo-thumb img { width:100%;height:100%;object-fit:cover;display:block; }
+.photo-thumb .photo-del {
+  position:absolute;top:2px;right:2px;
+  width:18px;height:18px;
+  background:rgba(0,0,0,0.6);color:white;
+  border:none;border-radius:50%;
+  font-size:11px;cursor:pointer;display:none;
+  align-items:center;justify-content:center;
+  line-height:1;
+}
+.photo-thumb:hover .photo-del { display:flex; }
+.photo-add {
+  width:72px;height:72px;
+  border:1px dashed var(--sage-400);
+  background:var(--sage-50);
+  display:flex;flex-direction:column;
+  align-items:center;justify-content:center;
+  cursor:pointer;gap:4px;color:var(--sage-600);
+  font-family:inherit;
+}
+.photo-add:hover { background:var(--sage-100);border-color:var(--sage-600); }
+.photo-add .icon { font-size:20px;font-weight:200; }
+.photo-add .label { font-size:9px;letter-spacing:0.1em;text-transform:uppercase; }
+.photo-uploading {
+  width:72px;height:72px;border:1px solid var(--sage-200);
+  background:var(--sage-50);display:flex;align-items:center;justify-content:center;
+  font-size:10px;color:var(--ink-soft);
+}
+
 .add-btn {
   display:flex;align-items:center;justify-content:center;gap:8px;
   padding:14px;font-size:11px;color:var(--sage-600);
@@ -249,23 +326,17 @@ body {
   background:var(--sage-700);color:white;cursor:pointer;
   font-family:inherit;letter-spacing:0.2em;text-transform:uppercase;
 }
-.add-input-row button.cancel {
-  background:transparent;color:var(--ink-soft);border:1px solid var(--sage-300);
-}
+.add-input-row button.cancel { background:transparent;color:var(--ink-soft);border:1px solid var(--sage-300); }
 
-/* ============ BUDGET ============ */
-.budget-summary {
-  display:grid;grid-template-columns:repeat(3,1fr);
-  background:rgba(255,255,255,0.5);border:1px solid var(--sage-200);margin-bottom:2rem;
-}
+/* BUDGET */
+.budget-summary { display:grid;grid-template-columns:repeat(3,1fr);background:rgba(255,255,255,0.5);border:1px solid var(--sage-200);margin-bottom:2rem; }
 .budget-stat { padding:1.5rem 1rem;text-align:center;border-right:1px solid var(--sage-200); }
 .budget-stat:last-child { border-right:none; }
 .budget-stat-label { font-size:10px;color:var(--ink-soft);letter-spacing:0.25em;text-transform:uppercase;margin-bottom:10px; }
 .budget-stat-num { font-size:22px;font-weight:300;color:var(--sage-800);letter-spacing:-0.02em;font-feature-settings:"tnum"; }
-.budget-stat-num.negative { color:#9b3333; }
+.budget-stat-num.negative { color:var(--red-text); }
 .budget-stat-num.positive { color:var(--sage-700); }
 .budget-stat-sub { font-size:11px;color:var(--ink-light);margin-top:4px; }
-
 .budget-actions { display:flex;gap:10px;margin-bottom:1.5rem;flex-wrap:wrap; }
 .btn {
   flex:1;min-width:120px;padding:12px 16px;
@@ -276,6 +347,8 @@ body {
 .btn:hover { background:var(--sage-700);color:white;border-color:var(--sage-700); }
 .btn.primary { background:var(--sage-700);color:white;border-color:var(--sage-700); }
 .btn.primary:hover { background:var(--sage-900);border-color:var(--sage-900); }
+.btn.danger { color:var(--red-text);border-color:var(--red-border); }
+.btn.danger:hover { background:var(--red-text);color:white;border-color:var(--red-text); }
 
 .budget-filter { display:flex;gap:8px;margin-bottom:1rem;flex-wrap:wrap; }
 .filter-chip {
@@ -291,44 +364,33 @@ body {
   display:grid;grid-template-columns:80px 1fr 100px 110px 28px;
   gap:10px;padding:13px 1.25rem;
   border-bottom:1px solid var(--sage-100);
-  align-items:center;font-size:13px;cursor:pointer;
-  transition:background 0.15s;
+  align-items:center;font-size:13px;cursor:pointer;transition:background 0.15s;
 }
 .budget-row:hover { background:var(--sage-50); }
 .budget-row:last-child { border-bottom:none; }
-.budget-row.header {
-  background:var(--sage-50);font-size:10px;
-  color:var(--ink-soft);letter-spacing:0.2em;text-transform:uppercase;
-  font-weight:500;cursor:default;
-}
+.budget-row.header { background:var(--sage-50);font-size:10px;color:var(--ink-soft);letter-spacing:0.2em;text-transform:uppercase;font-weight:500;cursor:default; }
 .budget-row.header:hover { background:var(--sage-50); }
 .budget-date { color:var(--ink-soft);font-size:12px;font-feature-settings:"tnum"; }
 .budget-desc { color:var(--ink); }
-.budget-desc .cat-label {
-  display:inline-block;font-size:10px;
-  padding:2px 8px;background:var(--sage-100);
-  color:var(--sage-700);margin-left:6px;
-  letter-spacing:0.1em;text-transform:uppercase;
-}
 .budget-amount { text-align:right;font-feature-settings:"tnum";font-weight:500; }
-.budget-amount.expense { color:#9b3333; }
+.budget-amount.expense { color:var(--red-text); }
 .budget-amount.income { color:var(--sage-700); }
 .budget-delete { background:none;border:none;color:var(--ink-light);cursor:pointer;font-size:14px;opacity:0; }
 .budget-row:hover .budget-delete { opacity:1; }
-.budget-delete:hover { color:#9b3333; }
+.budget-delete:hover { color:var(--red-text); }
 .budget-empty { text-align:center;padding:3rem 1rem;color:var(--ink-light); }
 
 /* MODAL */
 .modal-overlay {
   position:fixed;top:0;left:0;right:0;bottom:0;
-  background:rgba(42,54,36,0.5);
+  background:rgba(42,54,36,0.55);
   display:none;align-items:center;justify-content:center;
-  z-index:100;backdrop-filter:blur(4px);
+  z-index:100;backdrop-filter:blur(4px);padding:1rem;
 }
 .modal-overlay.show { display:flex; }
 .modal {
   background:var(--cream);border:1px solid var(--sage-300);
-  max-width:440px;width:90%;padding:2rem;
+  max-width:480px;width:100%;padding:2rem;
   max-height:90vh;overflow-y:auto;
 }
 .modal h3 { font-size:22px;font-weight:300;color:var(--sage-800);margin-bottom:1.5rem;letter-spacing:-0.02em;text-align:center; }
@@ -351,11 +413,39 @@ body {
 }
 .type-toggle button.active { background:var(--sage-700);color:white; }
 
-/* FOOTER */
-.footer-ornament {
-  display:flex;align-items:center;justify-content:center;
-  gap:16px;margin-top:4rem;padding-top:2rem;color:var(--sage-400);
+.settings-section { margin-bottom:1.5rem; }
+.settings-section h4 {
+  font-size:11px;color:var(--ink-soft);letter-spacing:0.2em;
+  text-transform:uppercase;margin-bottom:10px;font-weight:500;
 }
+.bg-preview {
+  width:100%;height:120px;
+  background:var(--sage-100);border:1px solid var(--sage-300);
+  background-size:cover;background-position:center;
+  margin-bottom:10px;
+}
+.bg-preview.empty { display:flex;align-items:center;justify-content:center;color:var(--ink-light);font-size:12px; }
+.file-input-label {
+  display:block;padding:10px 14px;text-align:center;
+  background:white;border:1px solid var(--sage-400);
+  color:var(--sage-700);font-size:11px;letter-spacing:0.2em;
+  text-transform:uppercase;cursor:pointer;font-weight:500;
+  transition:all 0.2s;margin-bottom:8px;
+}
+.file-input-label:hover { background:var(--sage-700);color:white; }
+
+/* Lightbox */
+.lightbox {
+  position:fixed;top:0;left:0;right:0;bottom:0;
+  background:rgba(0,0,0,0.85);display:none;
+  align-items:center;justify-content:center;
+  z-index:200;cursor:pointer;padding:2rem;
+}
+.lightbox.show { display:flex; }
+.lightbox img { max-width:100%;max-height:100%;object-fit:contain; }
+
+/* FOOTER */
+.footer-ornament { display:flex;align-items:center;justify-content:center;gap:16px;margin-top:4rem;padding-top:2rem;color:var(--sage-400); }
 .footer-ornament .line { width:80px;height:1px;background:var(--sage-300); }
 .footer-ornament .text { font-weight:300;font-size:13px;color:var(--sage-600);letter-spacing:0.05em; }
 
@@ -368,7 +458,11 @@ body {
   .cat-header { padding:1rem 1.25rem;gap:12px; }
   .cat-num { font-size:17px;min-width:26px; }
   .cat-title { font-size:15px; }
-  .item { padding:12px 1.25rem; }
+  .item-row { padding:12px 1rem;gap:8px; }
+  .item-extra { padding:0 1rem 12px 1rem; }
+  .action-btn { width:26px;height:26px; }
+  .date-chip { font-size:9px;padding:3px 6px;min-height:26px; }
+  .photo-thumb,.photo-add,.photo-uploading { width:64px;height:64px; }
   .budget-row { grid-template-columns:1fr 90px 24px;gap:8px; }
   .budget-row .budget-date,.budget-row.header .col-date { display:none; }
   .budget-summary { grid-template-columns:1fr; }
@@ -381,24 +475,27 @@ body {
 </head>
 <body>
 
+<div class="bg-image" id="bg-image"></div>
+<div class="bg-overlay"></div>
+
 <svg class="botanical-bg" viewBox="0 0 1440 900" preserveAspectRatio="xMidYMid slice">
-  <g opacity="0.5" stroke="#94a87f" stroke-width="0.8" fill="none">
+  <g opacity="0.4" stroke="#94a87f" stroke-width="0.8" fill="none">
     <path d="M-20,80 Q60,60 100,120 Q140,180 200,160"/>
     <ellipse cx="80" cy="85" rx="8" ry="3" fill="#b5c4a3" stroke="none" transform="rotate(-25 80 85)"/>
     <ellipse cx="110" cy="130" rx="9" ry="3.5" fill="#b5c4a3" stroke="none" transform="rotate(15 110 130)"/>
     <ellipse cx="150" cy="155" rx="8" ry="3" fill="#b5c4a3" stroke="none" transform="rotate(-10 150 155)"/>
   </g>
-  <g opacity="0.5" stroke="#94a87f" stroke-width="0.8" fill="none">
+  <g opacity="0.4" stroke="#94a87f" stroke-width="0.8" fill="none">
     <path d="M1460,60 Q1380,80 1340,140 Q1300,200 1240,170"/>
     <ellipse cx="1370" cy="95" rx="8" ry="3" fill="#b5c4a3" stroke="none" transform="rotate(25 1370 95)"/>
     <ellipse cx="1330" cy="145" rx="9" ry="3.5" fill="#b5c4a3" stroke="none" transform="rotate(-15 1330 145)"/>
   </g>
-  <g opacity="0.4" stroke="#94a87f" stroke-width="0.8" fill="none">
+  <g opacity="0.3" stroke="#94a87f" stroke-width="0.8" fill="none">
     <path d="M-30,820 Q40,790 90,830 Q150,870 220,840"/>
     <ellipse cx="60" cy="800" rx="9" ry="3.5" fill="#b5c4a3" stroke="none" transform="rotate(-15 60 800)"/>
     <ellipse cx="120" cy="850" rx="8" ry="3" fill="#b5c4a3" stroke="none" transform="rotate(20 120 850)"/>
   </g>
-  <g opacity="0.4" stroke="#94a87f" stroke-width="0.8" fill="none">
+  <g opacity="0.3" stroke="#94a87f" stroke-width="0.8" fill="none">
     <path d="M1470,850 Q1390,820 1350,860 Q1290,890 1230,860"/>
     <ellipse cx="1380" cy="830" rx="8" ry="3" fill="#b5c4a3" stroke="none" transform="rotate(15 1380 830)"/>
     <ellipse cx="1320" cy="875" rx="9" ry="3.5" fill="#b5c4a3" stroke="none" transform="rotate(-20 1320 875)"/>
@@ -406,7 +503,7 @@ body {
 </svg>
 
 <div class="container">
-  <!-- LOGIN -->
+
   <div id="login-screen" class="login-screen">
     <div class="ornament">
       <div class="line"></div>
@@ -423,7 +520,6 @@ body {
     <div class="login-hint">처음이라면 원하는 커플 코드를 만들어 입력하세요.<br>파트너에게 같은 코드를 알려주면 함께 사용할 수 있어요.</div>
   </div>
 
-  <!-- APP -->
   <div id="app" style="display:none">
     <div class="hero">
       <div class="hero-orn">
@@ -441,7 +537,8 @@ body {
       <div class="hero-meta">
         <span class="sync-indicator"><span class="sync-dot"></span><span id="sync-text">Live</span></span>
         <span id="couple-info"></span>
-        <button class="logout-btn" onclick="logout()">Logout</button>
+        <button class="icon-action" onclick="openSettings()">⚙ Settings</button>
+        <button class="icon-action" onclick="logout()">Logout</button>
       </div>
     </div>
 
@@ -451,19 +548,16 @@ body {
       <button class="tab" data-tab="budget" onclick="switchTab('budget')">Budget</button>
     </div>
 
-    <!-- TIMELINE TAB -->
     <div id="tab-timeline" class="tab-content active">
       <div id="timeline-content"></div>
     </div>
 
-    <!-- CHECKLIST TAB -->
     <div id="tab-checklist" class="tab-content">
       <div class="section-title">Checklist</div>
       <div class="section-subtitle">결혼 준비 항목 전체</div>
       <div id="categories"></div>
     </div>
 
-    <!-- BUDGET TAB -->
     <div id="tab-budget" class="tab-content">
       <div class="budget-summary">
         <div class="budget-stat">
@@ -511,7 +605,7 @@ body {
   </div>
 </div>
 
-<!-- Budget Modal -->
+<!-- 지출 추가 모달 -->
 <div class="modal-overlay" id="budget-modal">
   <div class="modal">
     <h3 id="modal-title">지출 추가</h3>
@@ -539,14 +633,10 @@ body {
     <div class="form-group">
       <label class="form-label">카테고리</label>
       <select id="entry-category" class="form-select">
-        <option value="예식장">예식장</option>
-        <option value="스튜디오">스튜디오</option>
-        <option value="드레스/예복">드레스/예복</option>
-        <option value="청첩장">청첩장</option>
-        <option value="신혼여행">신혼여행</option>
-        <option value="신혼집">신혼집</option>
-        <option value="예단/예물">예단/예물</option>
-        <option value="기타">기타</option>
+        <option value="예식장">예식장</option><option value="스튜디오">스튜디오</option>
+        <option value="드레스/예복">드레스/예복</option><option value="청첩장">청첩장</option>
+        <option value="신혼여행">신혼여행</option><option value="신혼집">신혼집</option>
+        <option value="예단/예물">예단/예물</option><option value="기타">기타</option>
       </select>
     </div>
     <div class="form-group">
@@ -560,7 +650,7 @@ body {
   </div>
 </div>
 
-<!-- Set Budget Modal -->
+<!-- 전체 예산 설정 모달 -->
 <div class="modal-overlay" id="set-budget-modal">
   <div class="modal">
     <h3>전체 예산 설정</h3>
@@ -575,9 +665,48 @@ body {
   </div>
 </div>
 
+<!-- 기한 설정 모달 -->
+<div class="modal-overlay" id="date-modal">
+  <div class="modal" style="max-width:360px;">
+    <h3>기한 설정</h3>
+    <div class="form-group">
+      <label class="form-label">마감일</label>
+      <input type="date" id="due-date-input" class="form-input">
+    </div>
+    <div class="form-actions">
+      <button class="btn danger" onclick="clearDueDate()">삭제</button>
+      <button class="btn" onclick="closeDateModal()">취소</button>
+      <button class="btn primary" onclick="saveDueDate()">저장</button>
+    </div>
+  </div>
+</div>
+
+<!-- 설정 모달 (배경화면) -->
+<div class="modal-overlay" id="settings-modal">
+  <div class="modal">
+    <h3>설정</h3>
+    <div class="settings-section">
+      <h4>배경화면</h4>
+      <div class="bg-preview empty" id="bg-preview">배경화면이 설정되지 않았습니다</div>
+      <label class="file-input-label" for="bg-upload">+ 배경화면 업로드</label>
+      <input type="file" id="bg-upload" accept="image/*" style="display:none" onchange="uploadBackground(event)">
+      <button class="btn danger" onclick="removeBackground()" style="width:100%;flex:none;">배경화면 제거</button>
+    </div>
+    <div class="form-actions">
+      <button class="btn primary" onclick="closeSettings()" style="width:100%;">닫기</button>
+    </div>
+  </div>
+</div>
+
+<!-- Lightbox -->
+<div class="lightbox" id="lightbox" onclick="closeLightbox()">
+  <img id="lightbox-img" src="" alt="">
+</div>
+
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
 import { getFirestore, doc, setDoc, onSnapshot } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+import { getStorage, ref, uploadBytes, getDownloadURL, deleteObject } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-storage.js";
 
 const firebaseConfig = {
   apiKey: "AIzaSyC6UPuWD-YpBlEpa1iHrhAr0VLraq0SpjA",
@@ -590,9 +719,9 @@ const firebaseConfig = {
 
 const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
+const storage = getStorage(app);
 const WEDDING_DATE = '2026-11-15';
 
-// 결혼 준비 전체 항목 (daysBeforeWedding: 결혼일 기준 며칠 전까지 완료 권장)
 const defaultData = [
   { id: 'venue', title: '예식장 & 장소', items: [
     { id: 'v1', text: '예식장 후보 리스트업',          tag:'Essential', daysBeforeWedding: 540 },
@@ -621,23 +750,19 @@ const defaultData = [
     { id: 'h4', text: '여권 유효기간 확인',                 tag:'',          daysBeforeWedding: 180 },
     { id: 'h5', text: '여행자 보험 가입',                   tag:'',          daysBeforeWedding: 30  },
   ]},
-  { id: 'newhome', title: '신혼집', items: [
+  { id: 'newhome', title: '신혼집 & 혼수', items: [
     { id: 'nh1', text: '신혼집 지역/예산 결정',             tag:'Essential', daysBeforeWedding: 360 },
     { id: 'nh2', text: '부동산 방문 및 매물 탐색',           tag:'Essential', daysBeforeWedding: 330 },
     { id: 'nh3', text: '신혼집 계약 완료 (전/월세/매매)',    tag:'Essential', daysBeforeWedding: 270 },
     { id: 'nh4', text: '인테리어 업체 견적 및 계약',          tag:'',          daysBeforeWedding: 180 },
     { id: 'nh5', text: '도배/장판/페인트 공사',               tag:'',          daysBeforeWedding: 120 },
-    { id: 'nh6', text: '냉장고/세탁기/에어컨 등 가전 구매',  tag:'Essential', daysBeforeWedding: 90  },
-    { id: 'nh7', text: '가구 구매 및 배치 계획',              tag:'',          daysBeforeWedding: 90  },
-    { id: 'nh8', text: '이사 날짜 및 이삿짐 센터 예약',       tag:'Essential', daysBeforeWedding: 60  },
-    { id: 'nh9', text: '전입신고 및 주소 변경',               tag:'',          daysBeforeWedding: 0   },
-    { id: 'nh10',text: '각종 청구서 주소 변경',               tag:'',          daysBeforeWedding: 0   },
-  ]},
-  { id: 'stuff', title: '혼수 & 살림', items: [
-    { id: 'st1', text: '혼수 품목 리스트업 (양가 논의)',      tag:'Essential', daysBeforeWedding: 240 },
-    { id: 'st2', text: '침구류 / 수건 / 생활용품 구매',       tag:'',          daysBeforeWedding: 90  },
-    { id: 'st3', text: '주방용품 / 식기 구매',                tag:'',          daysBeforeWedding: 90  },
-    { id: 'st4', text: '청소기 / 건조기 등 소형가전 구매',    tag:'',          daysBeforeWedding: 90  },
+    { id: 'nh6', text: '혼수 품목 리스트업 (양가 논의)',      tag:'Essential', daysBeforeWedding: 150 },
+    { id: 'nh7', text: '냉장고/세탁기/에어컨 등 가전 구매',  tag:'Essential', daysBeforeWedding: 90  },
+    { id: 'nh8', text: '가구 구매 및 배치 계획',              tag:'',          daysBeforeWedding: 90  },
+    { id: 'nh9', text: '침구/주방용품/생활용품 구매',         tag:'',          daysBeforeWedding: 60  },
+    { id: 'nh10',text: '이사 날짜 및 이삿짐 센터 예약',       tag:'Essential', daysBeforeWedding: 60  },
+    { id: 'nh11',text: '전입신고 및 주소 변경',               tag:'',          daysBeforeWedding: 0   },
+    { id: 'nh12',text: '각종 청구서 주소 변경',               tag:'',          daysBeforeWedding: 0   },
   ]},
   { id: 'ceremony', title: '예식 당일 준비', items: [
     { id: 'c1', text: '메이크업 & 헤어 예약',               tag:'Essential', daysBeforeWedding: 300 },
@@ -658,10 +783,17 @@ const defaultData = [
 ];
 
 let coupleCode = null, userName = null;
-let state = { checked:{}, custom:{}, lastUpdate:{}, budget:{ entries:[], totalBudget:0 } };
-let collapsed = {}, addingIn = {};
+let state = {
+  checked:{}, custom:{}, lastUpdate:{},
+  memos:{}, dueDates:{}, photos:{}, deleted:{},
+  budget:{entries:[],totalBudget:0},
+  background:null
+};
+let collapsed = {}, addingIn = {}, expandedItem = null;
 let unsubscribe = null, isApplyingRemote = false;
 let currentEntryType = 'expense', editingEntryId = null, currentFilter = 'all';
+let currentDateKey = null;
+let memoSaveTimers = {};
 
 function updateDday() {
   const wedding = new Date(WEDDING_DATE);
@@ -703,19 +835,30 @@ function startSync() {
     if (snap.exists()) {
       isApplyingRemote = true;
       const d = snap.data();
-      state = { checked:d.checked||{}, custom:d.custom||{}, lastUpdate:d.lastUpdate||{}, budget:d.budget||{entries:[],totalBudget:0} };
+      state = {
+        checked: d.checked||{},
+        custom: d.custom||{},
+        lastUpdate: d.lastUpdate||{},
+        memos: d.memos||{},
+        dueDates: d.dueDates||{},
+        photos: d.photos||{},
+        deleted: d.deleted||{},
+        budget: d.budget||{entries:[],totalBudget:0},
+        background: d.background||null
+      };
+      applyBackground();
       render(); renderTimeline(); renderBudget();
       isApplyingRemote = false;
       document.getElementById('sync-text').textContent = 'Live';
     } else {
-      setDoc(docRef, { checked:{}, custom:{}, lastUpdate:{}, budget:{entries:[],totalBudget:0} });
+      setDoc(docRef, { checked:{},custom:{},lastUpdate:{},memos:{},dueDates:{},photos:{},deleted:{},budget:{entries:[],totalBudget:0},background:null });
     }
   }, err => { console.error(err); document.getElementById('sync-text').textContent = 'Offline'; });
 }
 
 async function saveState() {
   if (isApplyingRemote) return;
-  try { await setDoc(doc(db,'weddings',coupleCode), state, {merge:true}); }
+  try { await setDoc(doc(db,'weddings',coupleCode), state, {merge:false}); }
   catch(e) { console.error(e); }
 }
 
@@ -729,19 +872,26 @@ window.switchTab = function(tabName) {
 function getData() {
   return defaultData.map(cat => ({
     ...cat,
-    items: [...cat.items, ...((state.custom&&state.custom[cat.id])||[])]
+    items: [
+      ...cat.items.filter(item => !state.deleted[`${cat.id}__${item.id}`]),
+      ...((state.custom && state.custom[cat.id])||[])
+    ]
   }));
 }
 
-function isChecked(catId, itemId) { return !!(state.checked&&state.checked[`${catId}__${itemId}`]); }
-function getCheckedBy(catId, itemId) { return state.lastUpdate&&state.lastUpdate[`${catId}__${itemId}`]; }
+function key(catId, itemId) { return `${catId}__${itemId}`; }
+function isChecked(catId, itemId) { return !!(state.checked && state.checked[key(catId,itemId)]); }
+function getCheckedBy(catId, itemId) { return state.lastUpdate && state.lastUpdate[key(catId,itemId)]; }
+function getMemo(catId, itemId) { return (state.memos && state.memos[key(catId,itemId)]) || ''; }
+function getDueDate(catId, itemId) { return state.dueDates && state.dueDates[key(catId,itemId)]; }
+function getPhotos(catId, itemId) { return (state.photos && state.photos[key(catId,itemId)]) || []; }
 
-window.toggleCheck = function(catId, itemId, fromTimeline) {
-  const key = `${catId}__${itemId}`;
+window.toggleCheck = function(catId, itemId) {
+  const k = key(catId, itemId);
   if (!state.checked) state.checked = {};
   if (!state.lastUpdate) state.lastUpdate = {};
-  if (state.checked[key]) { delete state.checked[key]; delete state.lastUpdate[key]; }
-  else { state.checked[key] = true; state.lastUpdate[key] = {by:userName, at:new Date().toISOString()}; }
+  if (state.checked[k]) { delete state.checked[k]; delete state.lastUpdate[k]; }
+  else { state.checked[k] = true; state.lastUpdate[k] = {by:userName, at:new Date().toISOString()}; }
   render(); renderTimeline(); saveState();
 };
 
@@ -757,18 +907,193 @@ window.submitAdd = function(catId) {
   state.custom[catId].push({ id:'custom_'+Date.now()+'_'+Math.random().toString(36).substr(2,5), text, tag:'', by:userName });
   addingIn[catId]=false; render(); saveState();
 };
-window.deleteCustom = function(e, catId, itemId) {
+
+window.deleteItem = function(e, catId, itemId) {
   e.stopPropagation();
   if (!confirm('이 항목을 삭제할까요?')) return;
-  if (state.custom&&state.custom[catId]) state.custom[catId]=state.custom[catId].filter(i=>i.id!==itemId);
-  const key=`${catId}__${itemId}`;
-  if (state.checked) delete state.checked[key];
-  if (state.lastUpdate) delete state.lastUpdate[key];
+  const k = key(catId, itemId);
+  if (itemId.startsWith('custom_')) {
+    if (state.custom && state.custom[catId]) state.custom[catId] = state.custom[catId].filter(i=>i.id!==itemId);
+  } else {
+    if (!state.deleted) state.deleted = {};
+    state.deleted[k] = true;
+  }
+  if (state.checked) delete state.checked[k];
+  if (state.lastUpdate) delete state.lastUpdate[k];
+  if (state.memos) delete state.memos[k];
+  if (state.dueDates) delete state.dueDates[k];
+  // 사진도 Storage에서 삭제 시도
+  const photos = getPhotos(catId, itemId);
+  photos.forEach(p => {
+    if (p.path) deleteObject(ref(storage, p.path)).catch(()=>{});
+  });
+  if (state.photos) delete state.photos[k];
   render(); renderTimeline(); saveState();
 };
+
 window.handleEnter = function(e, catId) {
   if (e.key==='Enter') window.submitAdd(catId);
   if (e.key==='Escape') window.cancelAdd(catId);
+};
+
+window.toggleExpand = function(e, catId, itemId, type) {
+  e.stopPropagation();
+  const k = key(catId, itemId);
+  const id = `${k}__${type}`;
+  expandedItem = expandedItem === id ? null : id;
+  render();
+};
+
+window.updateMemo = function(catId, itemId, value) {
+  const k = key(catId, itemId);
+  if (!state.memos) state.memos = {};
+  state.memos[k] = value;
+  // debounce save
+  if (memoSaveTimers[k]) clearTimeout(memoSaveTimers[k]);
+  memoSaveTimers[k] = setTimeout(() => { saveState(); }, 800);
+};
+
+window.openDateModal = function(e, catId, itemId) {
+  e.stopPropagation();
+  currentDateKey = key(catId, itemId);
+  const current = getDueDate(catId, itemId);
+  document.getElementById('due-date-input').value = current || '';
+  document.getElementById('date-modal').classList.add('show');
+};
+window.closeDateModal = function() { document.getElementById('date-modal').classList.remove('show'); currentDateKey = null; };
+window.saveDueDate = function() {
+  const val = document.getElementById('due-date-input').value;
+  if (!val) { alert('날짜를 선택해 주세요'); return; }
+  if (!state.dueDates) state.dueDates = {};
+  state.dueDates[currentDateKey] = val;
+  closeDateModal(); render(); renderTimeline(); saveState();
+};
+window.clearDueDate = function() {
+  if (state.dueDates) delete state.dueDates[currentDateKey];
+  closeDateModal(); render(); renderTimeline(); saveState();
+};
+
+window.uploadPhoto = async function(e, catId, itemId) {
+  const file = e.target.files[0]; if (!file) return;
+  if (file.size > 10*1024*1024) { alert('10MB 이하 사진만 업로드 가능해요'); e.target.value=''; return; }
+  const k = key(catId, itemId);
+  if (!state.photos) state.photos = {};
+  if (!state.photos[k]) state.photos[k] = [];
+
+  // 임시 업로드 중 표시
+  const tempId = 'temp_' + Date.now();
+  state.photos[k].push({ id: tempId, uploading: true });
+  render();
+
+  try {
+    const timestamp = Date.now();
+    const safeName = file.name.replace(/[^\w.-]/g, '_');
+    const path = `weddings/${coupleCode}/items/${k}/${timestamp}_${safeName}`;
+    const photoRef = ref(storage, path);
+    const snapshot = await uploadBytes(photoRef, file);
+    const url = await getDownloadURL(snapshot.ref);
+
+    // 임시 항목 교체
+    state.photos[k] = state.photos[k].filter(p => p.id !== tempId);
+    state.photos[k].push({
+      id: 'p_' + timestamp + '_' + Math.random().toString(36).substr(2,5),
+      url, path, by: userName, at: new Date().toISOString()
+    });
+    render();
+    saveState();
+  } catch(err) {
+    console.error(err);
+    state.photos[k] = state.photos[k].filter(p => p.id !== tempId);
+    render();
+    alert('사진 업로드에 실패했어요. 다시 시도해 주세요.\n\n' + err.message);
+  }
+  e.target.value = '';
+};
+
+window.deletePhoto = async function(e, catId, itemId, photoId) {
+  e.stopPropagation();
+  if (!confirm('이 사진을 삭제할까요?')) return;
+  const k = key(catId, itemId);
+  if (!state.photos || !state.photos[k]) return;
+  const photo = state.photos[k].find(p => p.id === photoId);
+  if (photo && photo.path) {
+    try { await deleteObject(ref(storage, photo.path)); } catch(err) { console.error(err); }
+  }
+  state.photos[k] = state.photos[k].filter(p => p.id !== photoId);
+  render(); saveState();
+};
+
+window.openLightbox = function(url) {
+  document.getElementById('lightbox-img').src = url;
+  document.getElementById('lightbox').classList.add('show');
+};
+window.closeLightbox = function() { document.getElementById('lightbox').classList.remove('show'); };
+
+window.openSettings = function() {
+  applyBackgroundPreview();
+  document.getElementById('settings-modal').classList.add('show');
+};
+window.closeSettings = function() { document.getElementById('settings-modal').classList.remove('show'); };
+
+function applyBackground() {
+  const bg = state.background;
+  const bgEl = document.getElementById('bg-image');
+  if (bg && bg.url) bgEl.style.backgroundImage = `url(${bg.url})`;
+  else bgEl.style.backgroundImage = '';
+}
+
+function applyBackgroundPreview() {
+  const bg = state.background;
+  const prev = document.getElementById('bg-preview');
+  if (bg && bg.url) {
+    prev.classList.remove('empty');
+    prev.style.backgroundImage = `url(${bg.url})`;
+    prev.textContent = '';
+  } else {
+    prev.classList.add('empty');
+    prev.style.backgroundImage = '';
+    prev.textContent = '배경화면이 설정되지 않았습니다';
+  }
+}
+
+window.uploadBackground = async function(e) {
+  const file = e.target.files[0]; if (!file) return;
+  if (file.size > 10*1024*1024) { alert('10MB 이하 사진만 업로드 가능해요'); e.target.value=''; return; }
+  const prev = document.getElementById('bg-preview');
+  prev.textContent = '업로드 중...';
+  prev.style.backgroundImage = '';
+  prev.classList.add('empty');
+  try {
+    // 기존 배경 삭제
+    if (state.background && state.background.path) {
+      try { await deleteObject(ref(storage, state.background.path)); } catch(err) {}
+    }
+    const timestamp = Date.now();
+    const safeName = file.name.replace(/[^\w.-]/g, '_');
+    const path = `weddings/${coupleCode}/background/${timestamp}_${safeName}`;
+    const bgRef = ref(storage, path);
+    const snapshot = await uploadBytes(bgRef, file);
+    const url = await getDownloadURL(snapshot.ref);
+    state.background = { url, path, at: new Date().toISOString() };
+    applyBackground(); applyBackgroundPreview();
+    saveState();
+  } catch(err) {
+    console.error(err);
+    alert('배경화면 업로드에 실패했어요.\n\n' + err.message);
+    applyBackgroundPreview();
+  }
+  e.target.value = '';
+};
+
+window.removeBackground = async function() {
+  if (!state.background) return;
+  if (!confirm('배경화면을 제거할까요?')) return;
+  if (state.background.path) {
+    try { await deleteObject(ref(storage, state.background.path)); } catch(err) {}
+  }
+  state.background = null;
+  applyBackground(); applyBackgroundPreview();
+  saveState();
 };
 
 function formatTime(iso) {
@@ -782,65 +1107,71 @@ function formatTime(iso) {
 function escapeHtml(s) {
   return String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 }
+function formatShortDate(iso) {
+  if (!iso) return '';
+  const d = new Date(iso);
+  return `${d.getFullYear().toString().slice(2)}.${String(d.getMonth()+1).padStart(2,'0')}.${String(d.getDate()).padStart(2,'0')}`;
+}
+function daysBetween(iso) {
+  const today = new Date(); today.setHours(0,0,0,0);
+  const target = new Date(iso); target.setHours(0,0,0,0);
+  return Math.ceil((target - today) / 86400000);
+}
 
-/* ========== TIMELINE ========== */
+/* TIMELINE */
 function renderTimeline() {
   const today = new Date(); today.setHours(0,0,0,0);
   const wedding = new Date(WEDDING_DATE);
   const daysLeft = Math.ceil((wedding - today) / 86400000);
 
-  // 전체 아이템 수집 + 완료 여부 계산
   const allItems = [];
   getData().forEach(cat => {
     cat.items.forEach(item => {
-      const dbw = (item.daysBeforeWedding !== undefined) ? item.daysBeforeWedding : 90;
-      const dueInDays = daysLeft - dbw; // 지금부터 몇 일 후에 해야 하는가 (음수 = 이미 지났어야)
+      const userDue = getDueDate(cat.id, item.id);
+      let dueInDays;
+      if (userDue) dueInDays = daysBetween(userDue);
+      else {
+        const dbw = (item.daysBeforeWedding !== undefined) ? item.daysBeforeWedding : 90;
+        dueInDays = daysLeft - dbw;
+      }
       allItems.push({
         catId: cat.id, catTitle: cat.title,
         itemId: item.id, text: item.text, tag: item.tag,
-        daysBeforeWedding: dbw,
-        dueInDays,
+        dueInDays, userDue,
         checked: isChecked(cat.id, item.id)
       });
     });
   });
 
-  // 미완료 항목만 분류
   const pending = allItems.filter(i => !i.checked);
-  const done    = allItems.filter(i => i.checked);
-
-  // 구간 분류
+  const done = allItems.filter(i => i.checked);
   const urgent = pending.filter(i => i.dueInDays <= 30).sort((a,b) => a.dueInDays - b.dueInDays);
-  const soon   = pending.filter(i => i.dueInDays > 30 && i.dueInDays <= 90).sort((a,b) => a.dueInDays - b.dueInDays);
-  const later  = pending.filter(i => i.dueInDays > 90).sort((a,b) => a.dueInDays - b.dueInDays);
+  const soon = pending.filter(i => i.dueInDays > 30 && i.dueInDays <= 90).sort((a,b) => a.dueInDays - b.dueInDays);
+  const later = pending.filter(i => i.dueInDays > 90).sort((a,b) => a.dueInDays - b.dueInDays);
 
-  function timeLabel(dueInDays) {
-    if (dueInDays < 0) return '기한 초과';
-    if (dueInDays === 0) return '오늘까지';
-    if (dueInDays <= 7) return `${dueInDays}일 후`;
-    if (dueInDays <= 30) return `${Math.ceil(dueInDays/7)}주 후`;
-    return `${Math.ceil(dueInDays/30)}개월 후`;
+  function timeLabel(d) {
+    if (d < 0) return `${-d}일 초과`;
+    if (d === 0) return '오늘까지';
+    if (d <= 7) return `${d}일 후`;
+    if (d <= 30) return `${Math.ceil(d/7)}주 후`;
+    return `${Math.ceil(d/30)}개월 후`;
   }
-
-  function cardHtml(item, phaseClass) {
+  function cardHtml(item) {
     const checked = item.checked;
     const timeCls = item.dueInDays <= 14 ? 'urgent-time' : item.dueInDays <= 90 ? 'soon-time' : '';
     return `
-      <div class="timeline-card ${checked ? 'done-card' : ''}" onclick="toggleCheck('${item.catId}','${item.itemId}',true)">
-        <div class="tl-check ${checked ? 'checked' : ''}">
-          ${checked ? '<svg viewBox="0 0 16 16"><polyline points="3,8 7,12 13,4"/></svg>' : ''}
-        </div>
+      <div class="timeline-card ${checked?'done-card':''}" onclick="toggleCheck('${item.catId}','${item.itemId}')">
+        <div class="tl-check ${checked?'checked':''}">${checked?'<svg viewBox="0 0 16 16"><polyline points="3,8 7,12 13,4"/></svg>':''}</div>
         <div class="tl-body">
-          <div class="tl-title ${checked ? 'done-text' : ''}">${escapeHtml(item.text)}</div>
-          <div class="tl-meta">${escapeHtml(item.catTitle)}</div>
+          <div class="tl-title ${checked?'done-text':''}">${escapeHtml(item.text)}</div>
+          <div class="tl-meta">${escapeHtml(item.catTitle)}${item.userDue?` · ${formatShortDate(item.userDue)}`:''}</div>
         </div>
-        ${item.tag ? `<span class="tl-cat">${escapeHtml(item.tag)}</span>` : ''}
+        ${item.tag?`<span class="tl-cat">${escapeHtml(item.tag)}</span>`:''}
         <div class="tl-time ${timeCls}">${timeLabel(item.dueInDays)}</div>
       </div>
     `;
   }
-
-  function phaseHtml(label, badgeClass, items, showDone) {
+  function phaseHtml(label, badgeClass, items) {
     if (items.length === 0) return '';
     return `
       <div class="timeline-phase">
@@ -849,31 +1180,24 @@ function renderTimeline() {
           <div class="phase-line"></div>
           <span style="font-size:11px;color:var(--ink-light);letter-spacing:0.1em;">${items.length}건</span>
         </div>
-        ${items.map(i => cardHtml(i, badgeClass)).join('')}
+        ${items.map(cardHtml).join('')}
       </div>
     `;
   }
-
-  const totalPending = pending.length;
   const totalAll = allItems.length;
-  const pct = totalAll > 0 ? Math.round(done.length / totalAll * 100) : 0;
-
+  const pct = totalAll>0 ? Math.round(done.length/totalAll*100) : 0;
   let html = `
     <div class="timeline-header">
       <h2>다음 할 일</h2>
       <small>${done.length}/${totalAll} 완료 · ${pct}%</small>
     </div>
   `;
-
-  if (totalPending === 0) {
-    html += `<div class="timeline-empty">🎉 모든 항목이 완료되었어요!</div>`;
-  } else {
-    if (urgent.length > 0) html += phaseHtml('지금 당장', 'urgent', urgent);
-    if (soon.length > 0)   html += phaseHtml('곧 해야 할 일', 'soon', soon);
-    if (later.length > 0)  html += phaseHtml('앞으로 할 일', 'later', later);
+  if (pending.length === 0) html += `<div class="timeline-empty">🎉 모든 항목이 완료되었어요!</div>`;
+  else {
+    if (urgent.length>0) html += phaseHtml('지금 당장', 'urgent', urgent);
+    if (soon.length>0) html += phaseHtml('곧 해야 할 일', 'soon', soon);
+    if (later.length>0) html += phaseHtml('앞으로 할 일', 'later', later);
   }
-
-  // 최근 완료 3개
   if (done.length > 0) {
     const recentDone = done.slice(-3).reverse();
     html += `
@@ -883,15 +1207,91 @@ function renderTimeline() {
           <div class="phase-line"></div>
           <span style="font-size:11px;color:var(--ink-light);letter-spacing:0.1em;">${done.length}건 완료</span>
         </div>
-        ${recentDone.map(i => cardHtml(i, 'done-phase')).join('')}
+        ${recentDone.map(cardHtml).join('')}
       </div>
     `;
   }
-
   document.getElementById('timeline-content').innerHTML = html;
 }
 
-/* ========== CHECKLIST ========== */
+/* CHECKLIST */
+function dueChipHtml(catId, itemId) {
+  const due = getDueDate(catId, itemId);
+  if (!due) {
+    return `<button class="date-chip" onclick="openDateModal(event,'${catId}','${itemId}')" title="기한 설정">+ 기한</button>`;
+  }
+  const d = daysBetween(due);
+  let cls = 'has-date';
+  let label = formatShortDate(due);
+  if (d < 0) { cls = 'overdue'; label = `${formatShortDate(due)} (${-d}일↑)`; }
+  else if (d === 0) { cls = 'urgent'; label = `오늘`; }
+  else if (d <= 7) { cls = 'urgent'; label = `D-${d}`; }
+  return `<button class="date-chip ${cls}" onclick="openDateModal(event,'${catId}','${itemId}')" title="${formatShortDate(due)}">${label}</button>`;
+}
+
+function memoIconHtml(catId, itemId) {
+  const memo = getMemo(catId, itemId);
+  const isActive = memo && memo.length > 0;
+  return `
+    <button class="action-btn ${isActive?'active':''}" onclick="toggleExpand(event,'${catId}','${itemId}','memo')" title="메모" aria-label="메모">
+      <svg viewBox="0 0 24 24"><path d="M11 4H4v16h16v-7M18.5 2.5a2.12 2.12 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
+    </button>
+  `;
+}
+
+function photoIconHtml(catId, itemId) {
+  const photos = getPhotos(catId, itemId);
+  const isActive = photos.length > 0;
+  return `
+    <button class="action-btn ${isActive?'active':''}" onclick="toggleExpand(event,'${catId}','${itemId}','photo')" title="사진" aria-label="사진">
+      <svg viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21,15 16,10 5,21"/></svg>
+    </button>
+  `;
+}
+
+function expandedHtml(catId, itemId) {
+  const k = key(catId, itemId);
+  const memoOpen = expandedItem === `${k}__memo`;
+  const photoOpen = expandedItem === `${k}__photo`;
+  if (!memoOpen && !photoOpen) return '';
+
+  let html = '<div class="item-extra">';
+  if (memoOpen) {
+    const memo = getMemo(catId, itemId);
+    html += `
+      <textarea class="memo-area" placeholder="메모를 입력하세요... (자동 저장됨)" onclick="event.stopPropagation()" oninput="updateMemo('${catId}','${itemId}',this.value)">${escapeHtml(memo)}</textarea>
+    `;
+  }
+  if (photoOpen) {
+    const photos = getPhotos(catId, itemId);
+    html += `<div class="photo-section">
+      <div class="photo-section-label">사진 (${photos.length}장)</div>
+      <div class="photo-row">`;
+    photos.forEach(p => {
+      if (p.uploading) {
+        html += `<div class="photo-uploading">업로드 중...</div>`;
+      } else {
+        html += `
+          <div class="photo-thumb" onclick="event.stopPropagation();openLightbox('${p.url}')">
+            <img src="${p.url}" alt="">
+            <button class="photo-del" onclick="deletePhoto(event,'${catId}','${itemId}','${p.id}')">×</button>
+          </div>
+        `;
+      }
+    });
+    html += `
+        <label class="photo-add" onclick="event.stopPropagation()">
+          <span class="icon">+</span>
+          <span class="label">추가</span>
+          <input type="file" accept="image/*" style="display:none" onchange="uploadPhoto(event,'${catId}','${itemId}')">
+        </label>
+      </div>
+    </div>`;
+  }
+  html += '</div>';
+  return html;
+}
+
 function render() {
   const data = getData();
   const container = document.getElementById('categories');
@@ -899,7 +1299,7 @@ function render() {
   data.forEach((cat, idx) => {
     const checkedCount = cat.items.filter(i => isChecked(cat.id, i.id)).length;
     const total = cat.items.length;
-    const allDone = total > 0 && checkedCount === total;
+    const allDone = total>0 && checkedCount===total;
     const isCollapsed = collapsed[cat.id];
     const div = document.createElement('div');
     div.className = 'category' + (isCollapsed ? ' collapsed' : '');
@@ -915,18 +1315,23 @@ function render() {
         ${cat.items.map(item => {
           const checked = isChecked(cat.id, item.id);
           const meta = checked ? getCheckedBy(cat.id, item.id) : null;
-          const isCustom = item.id.startsWith('custom_');
           return `
-            <div class="item" onclick="toggleCheck('${cat.id}','${item.id}')">
-              <div class="checkbox ${checked?'checked':''}">
-                ${checked ? '<svg viewBox="0 0 16 16"><polyline points="3,8 7,12 13,4"/></svg>' : ''}
+            <div class="item-wrap">
+              <div class="item-row">
+                <div class="checkbox ${checked?'checked':''}" onclick="toggleCheck('${cat.id}','${item.id}')">
+                  ${checked?'<svg viewBox="0 0 16 16"><polyline points="3,8 7,12 13,4"/></svg>':''}
+                </div>
+                <div class="item-content" onclick="toggleCheck('${cat.id}','${item.id}')">
+                  <div class="item-text ${checked?'checked':''}">${escapeHtml(item.text)}</div>
+                  ${meta?`<div class="item-meta">${escapeHtml(meta.by)} · ${formatTime(meta.at)}</div>`:''}
+                </div>
+                ${item.tag?`<span class="item-tag">${item.tag}</span>`:''}
+                ${memoIconHtml(cat.id, item.id)}
+                ${dueChipHtml(cat.id, item.id)}
+                ${photoIconHtml(cat.id, item.id)}
+                <button class="delete-btn" onclick="deleteItem(event,'${cat.id}','${item.id}')" aria-label="삭제">×</button>
               </div>
-              <div class="item-content">
-                <div class="item-text ${checked?'checked':''}">${escapeHtml(item.text)}</div>
-                ${meta ? `<div class="item-meta">${escapeHtml(meta.by)} · ${formatTime(meta.at)}</div>` : ''}
-              </div>
-              ${item.tag ? `<span class="item-tag">${item.tag}</span>` : ''}
-              ${isCustom ? `<button class="item-delete" onclick="deleteCustom(event,'${cat.id}','${item.id}')">×</button>` : ''}
+              ${expandedHtml(cat.id, item.id)}
             </div>
           `;
         }).join('')}
@@ -946,7 +1351,7 @@ function render() {
   });
 }
 
-/* ========== BUDGET ========== */
+/* BUDGET */
 function formatWon(n) { return '₩' + Math.round(n).toLocaleString('ko-KR'); }
 function formatDate(iso) {
   if (!iso) return '';
@@ -999,7 +1404,7 @@ window.saveBudgetEntry = function() {
   if (!state.budget.entries) state.budget.entries=[];
   if (editingEntryId) {
     const en = state.budget.entries.find(e=>e.id===editingEntryId);
-    if (en) { en.desc=desc; en.amount=amount; en.date=date; en.category=category; en.memo=memo; en.type=currentEntryType; }
+    if (en) { en.desc=desc;en.amount=amount;en.date=date;en.category=category;en.memo=memo;en.type=currentEntryType; }
   } else {
     state.budget.entries.push({
       id:'b_'+Date.now()+'_'+Math.random().toString(36).substr(2,5),
@@ -1033,10 +1438,9 @@ function renderBudget() {
   const entries = state.budget.entries||[];
   const totalBudget = state.budget.totalBudget||0;
   const expenses = entries.filter(e=>e.type!=='income').reduce((s,e)=>s+(parseFloat(e.amount)||0),0);
-  const incomes  = entries.filter(e=>e.type==='income').reduce((s,e)=>s+(parseFloat(e.amount)||0),0);
+  const incomes = entries.filter(e=>e.type==='income').reduce((s,e)=>s+(parseFloat(e.amount)||0),0);
   const spent = expenses - incomes;
   const remaining = totalBudget - spent;
-
   document.getElementById('budget-total').textContent = formatWon(totalBudget);
   document.getElementById('budget-total-sub').textContent = totalBudget>0?'계획 예산':'예산 미설정';
   document.getElementById('budget-spent').textContent = formatWon(spent);
@@ -1050,7 +1454,6 @@ function renderBudget() {
 
   const filtered = currentFilter==='all' ? entries : entries.filter(e=>e.category===currentFilter);
   const sorted = [...filtered].sort((a,b)=>(b.date||'').localeCompare(a.date||''));
-
   const tableEl = document.getElementById('budget-table');
   if (sorted.length===0) {
     tableEl.innerHTML=`<div class="budget-empty">💰 아직 기록된 내역이 없어요.<br><span style="font-size:12px;margin-top:8px;display:block;">+ 지출 추가 또는 엑셀 Import로 시작하세요</span></div>`;
@@ -1066,10 +1469,7 @@ function renderBudget() {
     html += `
       <div class="budget-row" onclick="editBudgetEntry('${e.id}')">
         <div class="budget-date">${formatDate(e.date)}</div>
-        <div class="budget-desc">
-          ${escapeHtml(e.desc)}
-          ${e.memo ? `<div style="font-size:11px;color:var(--ink-light);margin-top:2px;">${escapeHtml(e.memo)}</div>` : ''}
-        </div>
+        <div class="budget-desc">${escapeHtml(e.desc)}${e.memo?`<div style="font-size:11px;color:var(--ink-light);margin-top:2px;">${escapeHtml(e.memo)}</div>`:''}</div>
         <div style="font-size:11px;color:var(--ink-soft);">${escapeHtml(e.category)}</div>
         <div class="budget-amount ${isIncome?'income':'expense'}">${isIncome?'+':'-'}${formatWon(e.amount)}</div>
         <button class="budget-delete" onclick="deleteBudgetEntry(event,'${e.id}')">×</button>
@@ -1079,7 +1479,7 @@ function renderBudget() {
   tableEl.innerHTML = html;
 }
 
-/* ========== EXCEL ========== */
+/* EXCEL */
 window.handleExcelImport = function(event) {
   const file = event.target.files[0]; if (!file) return;
   const reader = new FileReader();
@@ -1149,7 +1549,7 @@ window.exportToExcel = function() {
   XLSX.writeFile(wbOut,`wedding_budget_${new Date().toISOString().slice(0,10)}.xlsx`);
 };
 
-/* ========== INIT ========== */
+/* INIT */
 const savedCode=localStorage.getItem('wedding_couple_code');
 const savedName=localStorage.getItem('wedding_user_name');
 if (savedCode) {
@@ -1161,6 +1561,8 @@ document.getElementById('couple-code-input').addEventListener('keydown',e=>{if(e
 document.getElementById('name-input').addEventListener('keydown',e=>{if(e.key==='Enter')window.login();});
 document.getElementById('budget-modal').addEventListener('click',e=>{if(e.target.id==='budget-modal')closeBudgetModal();});
 document.getElementById('set-budget-modal').addEventListener('click',e=>{if(e.target.id==='set-budget-modal')closeSetBudgetModal();});
+document.getElementById('date-modal').addEventListener('click',e=>{if(e.target.id==='date-modal')closeDateModal();});
+document.getElementById('settings-modal').addEventListener('click',e=>{if(e.target.id==='settings-modal')closeSettings();});
 </script>
 </body>
 </html>
