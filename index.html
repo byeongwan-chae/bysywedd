@@ -831,44 +831,39 @@ const HONEYMOON_TOTAL = 3042076;
 
 const DEFAULT_HONEYMOON = { days:[
   { id:'hday_1',  date:'2026-11-16', items:[
-    { id:'hi_1_1', time:'14:05', place:'인천국제공항 출발',       memo:'' },
-    { id:'hi_1_2', time:'19:35', place:'로마 피우미치노 공항 도착', memo:'숙박: Camplus Hotel Roma Centro · ₩902,383' }
+    { id:'hi_1_1', time:'14:05',       place:'인천 출발', memo:'' },
+    { id:'hi_1_2', time:'19:35',       place:'로마 도착', memo:'' }
   ]},
   { id:'hday_2',  date:'2026-11-17', items:[
-    { id:'hi_2_1', time:'14:00', place:'트레비 분수',    memo:'' },
-    { id:'hi_2_2', time:'14:30', place:'포로 로마노',    memo:'' },
-    { id:'hi_2_3', time:'15:00', place:'콜로세움',       memo:'' },
-    { id:'hi_2_4', time:'15:30', place:'보르게세 공원',  memo:'숙박: Camplus Hotel Roma Centro' }
+    { id:'hi_2_1', time:'14:00~16:00', place:'로마 시내 구경', memo:'트레비분수, 포로로마노, 콜로세움, 보르게세 공원' }
   ]},
   { id:'hday_3',  date:'2026-11-18', items:[
-    { id:'hi_3_1', time:'08:00', place:'바티칸 투어', memo:'성 베드로 대성당, 바티칸 박물관 · 숙박: Camplus Hotel Roma Centro' }
+    { id:'hi_3_1', time:'08:00~10:00', place:'바티칸 투어', memo:'' }
   ]},
   { id:'hday_4',  date:'2026-11-19', items:[
-    { id:'hi_4_1', time:'10:30', place:'렌터카 수령',              memo:'렌트비 ₩520,000' },
-    { id:'hi_4_2', time:'12:00', place:'막시무스의 집 (Circo Massimo)', memo:'숙박: 테라안티카, 토스카나 · ₩909,702' }
+    { id:'hi_4_1', time:'10:30',       place:'렌터카 수령',    memo:'' },
+    { id:'hi_4_2', time:'12:00~14:00', place:'막시무스의 집',  memo:'' }
   ]},
   { id:'hday_5',  date:'2026-11-20', items:[
-    { id:'hi_5_1', time:'14:00', place:'피사의 사탑', memo:'숙박: 테라안티카, 토스카나' }
+    { id:'hi_5_1', time:'14:00~16:00', place:'피사의 사탑', memo:'' }
   ]},
   { id:'hday_6',  date:'2026-11-21', items:[
-    { id:'hi_6_1', time:'08:00', place:'친퀘테레 당일치기', memo:'숙박: Doria Park Hotel, 레리치 · ₩709,991' }
+    { id:'hi_6_1', time:'08:00~10:00', place:'친퀘테레 당일치기', memo:'' }
   ]},
   { id:'hday_7',  date:'2026-11-22', items:[
-    { id:'hi_7_1', time:'10:00', place:'우피치 미술관',   memo:'사전 예약 필수' },
-    { id:'hi_7_2', time:'18:00', place:'미켈란젤로 언덕', memo:'피렌체 전망 명소 · 숙박: 피렌체 Airbnb' }
+    { id:'hi_7_1', time:'10:00~12:00', place:'우피치 미술관 투어', memo:'' },
+    { id:'hi_7_2', time:'18:00~20:00', place:'미켈란젤로 언덕',   memo:'' }
   ]},
-  { id:'hday_8',  date:'2026-11-23', items:[
-    { id:'hi_8_1', time:'', place:'피렌체 자유 일정', memo:'숙박: 피렌체 Airbnb' }
-  ]},
+  { id:'hday_8',  date:'2026-11-23', items:[] },
   { id:'hday_9',  date:'2026-11-24', items:[
-    { id:'hi_9_1', time:'10:00', place:'The Mall 아울렛', memo:'피렌체 근교 · 숙박: 피렌체 Airbnb' }
+    { id:'hi_9_1', time:'10:00~12:00', place:'더 몰 (아울렛)', memo:'' }
   ]},
   { id:'hday_10', date:'2026-11-25', items:[
-    { id:'hi_10_1', time:'18:00', place:'렌터카 반납 (공항)',        memo:'' },
-    { id:'hi_10_2', time:'22:00', place:'로마 피우미치노 공항 출발', memo:'' }
+    { id:'hi_10_1', time:'18:00~20:00', place:'렌터카 반납 (공항)', memo:'' },
+    { id:'hi_10_2', time:'22:00',       place:'로마 출발',          memo:'' }
   ]},
   { id:'hday_11', date:'2026-11-26', items:[
-    { id:'hi_11_1', time:'17:25', place:'인천국제공항 도착', memo:'' }
+    { id:'hi_11_1', time:'17:25', place:'인천 도착', memo:'' }
   ]}
 ]};
 
@@ -1667,7 +1662,10 @@ function renderHoneymoon() {
     </div>
     <div class="hm-header">
       <h2>신혼여행 일정</h2>
-      <button class="btn primary" onclick="addHoneymoonDay()">+ Day 추가</button>
+      <div style="display:flex;gap:8px;">
+        <button class="btn" onclick="loadDefaultHoneymoon()" title="이탈리아 기본 일정으로 재설정">↺ 재설정</button>
+        <button class="btn primary" onclick="addHoneymoonDay()">+ Day 추가</button>
+      </div>
     </div>
   `;
 
@@ -1723,7 +1721,7 @@ function renderHoneymoon() {
 }
 
 window.loadDefaultHoneymoon = function() {
-  if (!confirm('이탈리아 11일 기본 일정을 불러올까요?\n(기존 일정은 비어있어서 덮어쓰기 됩니다)')) return;
+  if (!confirm('이탈리아 기본 일정으로 재설정할까요?\n현재 일정이 모두 교체됩니다.')) return;
   state.honeymoon = JSON.parse(JSON.stringify(DEFAULT_HONEYMOON));
   renderHoneymoon(); saveState();
 };
