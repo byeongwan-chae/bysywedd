@@ -1057,7 +1057,7 @@ window.toggleCheck = function(catId, itemId) {
   render(); renderTimeline(); saveState();
 };
 
-window.toggleCollapse = function(catId) { collapsed[catId]=!collapsed[catId]; render(); };
+window.toggleCollapse = function(catId) { collapsed[catId] = collapsed[catId] === false ? true : false; render(); };
 window.startAdd = function(e, catId) { e.stopPropagation(); addingIn[catId]=true; render(); };
 window.cancelAdd = function(catId) { addingIn[catId]=false; render(); };
 window.submitAdd = function(catId) {
@@ -1462,7 +1462,7 @@ function render() {
     const checkedCount = cat.items.filter(i => isChecked(cat.id, i.id)).length;
     const total = cat.items.length;
     const allDone = total>0 && checkedCount===total;
-    const isCollapsed = collapsed[cat.id];
+    const isCollapsed = collapsed[cat.id] !== false;
     const div = document.createElement('div');
     div.className = 'category' + (isCollapsed ? ' collapsed' : '');
     const num = String(idx+1).padStart(2,'0');
