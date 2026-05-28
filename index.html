@@ -4,6 +4,12 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Our Wedding · 우리의 결혼 준비</title>
+<link rel="manifest" href="manifest.json">
+<meta name="theme-color" content="#485a3d">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="우리의 결혼 준비">
+<link rel="apple-touch-icon" href="icon-192.png">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
 <style>
 * { box-sizing: border-box; margin: 0; padding: 0; }
@@ -453,12 +459,51 @@ body {
 .footer-ornament .line { width:80px;height:1px;background:var(--sage-300); }
 .footer-ornament .text { font-weight:300;font-size:13px;color:var(--sage-600);letter-spacing:0.03em; }
 
+/* HONEYMOON */
+.hm-header { display:flex;align-items:center;justify-content:space-between;margin-bottom:1.5rem; }
+.hm-header h2 { font-size:22px;font-weight:300;color:var(--sage-800);letter-spacing:-0.02em; }
+.hm-day { background:rgba(255,255,255,0.7);border:1px solid var(--sage-200);margin-bottom:1.25rem;overflow:hidden;transition:border-color 0.2s; }
+.hm-day:hover { border-color:var(--sage-300); }
+.hm-day-header {
+  display:flex;align-items:center;gap:10px;
+  padding:1rem 1.25rem;
+  background:var(--sage-50);border-bottom:1px solid var(--sage-200);
+}
+.hm-day-label { font-size:16px;font-weight:500;color:var(--sage-800);letter-spacing:-0.01em;white-space:nowrap; }
+.hm-day-date-input {
+  font-size:12px;padding:4px 8px;
+  border:1px solid var(--sage-200);background:transparent;
+  font-family:inherit;outline:none;color:var(--ink-soft);cursor:pointer;
+  transition:border-color 0.2s;
+}
+.hm-day-date-input:focus { border-color:var(--sage-600); }
+.hm-item {
+  display:flex;align-items:flex-start;gap:12px;
+  padding:12px 1.25rem;
+  border-bottom:1px solid var(--sage-100);
+  transition:background 0.15s;
+}
+.hm-item:last-of-type { border-bottom:none; }
+.hm-item:hover { background:var(--sage-50); }
+.hm-item-time {
+  font-size:13px;color:var(--sage-700);
+  font-feature-settings:"tnum";
+  min-width:44px;font-weight:500;
+  padding-top:1px;white-space:nowrap;
+}
+.hm-item-body { flex:1;min-width:0; }
+.hm-item-place { font-size:14px;color:var(--ink);font-weight:400;line-height:1.4; }
+.hm-item-memo { font-size:12px;color:var(--ink-soft);margin-top:3px;font-style:italic;line-height:1.4; }
+.hm-item-actions { display:flex;align-items:center;gap:4px;flex-shrink:0; }
+.hm-empty { padding:1.5rem 1.25rem;font-size:13px;color:var(--ink-light); }
+
 /* MOBILE */
 @media (max-width:600px) {
   .container { padding:1rem 1rem 3rem; }
   .hero { padding:2rem 0.5rem 1.5rem; }
   .hero h1 { font-size:36px; }
-  .tab { padding:12px 14px;font-size:11px;letter-spacing:0.08em; }
+  .tabs { overflow-x:auto;justify-content:flex-start; }
+  .tab { padding:12px 12px;font-size:11px;letter-spacing:0.06em;white-space:nowrap; }
   .cat-header { padding:1rem 1.25rem;gap:12px; }
   .cat-num { font-size:17px;min-width:26px; }
   .cat-title { font-size:15px; }
@@ -477,6 +522,9 @@ body {
   .budget-stat:last-child { border-bottom:none; }
   .btn { font-size:10px;padding:10px 10px;letter-spacing:0.08em; }
   .tl-time { display:none; }
+  .hm-day-header { padding:0.875rem 1rem; }
+  .hm-item { padding:10px 1rem; }
+  .hm-item-time { min-width:38px;font-size:12px; }
 }
 </style>
 </head>
@@ -553,6 +601,7 @@ body {
       <button class="tab active" data-tab="timeline" onclick="switchTab('timeline')">Timeline</button>
       <button class="tab" data-tab="checklist" onclick="switchTab('checklist')">Checklist</button>
       <button class="tab" data-tab="budget" onclick="switchTab('budget')">Budget</button>
+      <button class="tab" data-tab="honeymoon" onclick="switchTab('honeymoon')">Honeymoon</button>
     </div>
 
     <div id="tab-timeline" class="tab-content active">
@@ -602,6 +651,10 @@ body {
         <div class="filter-chip" data-cat="기타" onclick="filterBudget('기타')">기타</div>
       </div>
       <div class="budget-table" id="budget-table"></div>
+    </div>
+
+    <div id="tab-honeymoon" class="tab-content">
+      <div id="honeymoon-content"></div>
     </div>
 
     <div class="footer-ornament">
@@ -710,6 +763,29 @@ body {
   <img id="lightbox-img" src="" alt="">
 </div>
 
+<!-- 신혼여행 일정 항목 모달 -->
+<div class="modal-overlay" id="hm-item-modal">
+  <div class="modal" style="max-width:400px;">
+    <h3 id="hm-modal-title">일정 추가</h3>
+    <div class="form-group">
+      <label class="form-label">시간</label>
+      <input type="time" id="hm-item-time" class="form-input">
+    </div>
+    <div class="form-group">
+      <label class="form-label">장소 / 활동</label>
+      <input type="text" id="hm-item-place" class="form-input" placeholder="예: 나리타 공항 도착">
+    </div>
+    <div class="form-group">
+      <label class="form-label">메모 (선택)</label>
+      <input type="text" id="hm-item-memo" class="form-input" placeholder="예약번호, 주소 등">
+    </div>
+    <div class="form-actions">
+      <button class="btn" onclick="closeHmItemModal()">취소</button>
+      <button class="btn primary" onclick="saveHoneymoonItem()">저장</button>
+    </div>
+  </div>
+</div>
+
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
 import { getFirestore, doc, setDoc, onSnapshot } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
@@ -794,13 +870,16 @@ let state = {
   checked:{}, custom:{}, lastUpdate:{},
   memos:{}, dueDates:{}, photos:{}, deleted:{},
   budget:{entries:[],totalBudget:0},
-  background:null
+  background:null,
+  honeymoon:{days:[]}
 };
 let collapsed = {}, addingIn = {}, expandedItem = null;
 let unsubscribe = null, isApplyingRemote = false;
 let currentEntryType = 'expense', editingEntryId = null, currentFilter = 'all';
 let currentDateKey = null;
 let memoSaveTimers = {};
+let hmEditingDayId = null, hmEditingItemId = null;
+let firstSync = true;
 
 function updateDday() {
   const wedding = new Date(WEDDING_DATE);
@@ -827,6 +906,8 @@ window.login = function() {
   document.getElementById('couple-info').textContent = `${name} · ${code}`;
   updateDday();
   startSync();
+  registerServiceWorker();
+  setTimeout(requestNotificationPermission, 2000);
 };
 
 window.logout = function() {
@@ -842,6 +923,8 @@ function startSync() {
     if (snap.exists()) {
       isApplyingRemote = true;
       const d = snap.data();
+      const prevChecked = firstSync ? {} : {...(state.checked||{})};
+      const prevLastUpdate = firstSync ? {} : {...(state.lastUpdate||{})};
       state = {
         checked: d.checked||{},
         custom: d.custom||{},
@@ -851,14 +934,19 @@ function startSync() {
         photos: d.photos||{},
         deleted: d.deleted||{},
         budget: d.budget||{entries:[],totalBudget:0},
-        background: d.background||null
+        background: d.background||null,
+        honeymoon: d.honeymoon||{days:[]}
       };
       applyBackground();
-      render(); renderTimeline(); renderBudget();
+      render(); renderTimeline(); renderBudget(); renderHoneymoon();
+      if (!firstSync) checkPartnerChecks(prevLastUpdate, state.lastUpdate||{});
+      checkDueDateNotifications();
+      checkBudgetOverNotification();
+      firstSync = false;
       isApplyingRemote = false;
       document.getElementById('sync-text').textContent = 'Live';
     } else {
-      setDoc(docRef, { checked:{},custom:{},lastUpdate:{},memos:{},dueDates:{},photos:{},deleted:{},budget:{entries:[],totalBudget:0},background:null });
+      setDoc(docRef, { checked:{},custom:{},lastUpdate:{},memos:{},dueDates:{},photos:{},deleted:{},budget:{entries:[],totalBudget:0},background:null,honeymoon:{days:[]} });
     }
   }, err => { console.error(err); document.getElementById('sync-text').textContent = 'Offline'; });
 }
@@ -1488,6 +1576,215 @@ function renderBudget() {
   tableEl.innerHTML = html;
 }
 
+/* HONEYMOON */
+function renderHoneymoon() {
+  const container = document.getElementById('honeymoon-content');
+  if (!container) return;
+  const days = (state.honeymoon && state.honeymoon.days) || [];
+
+  let html = `
+    <div class="hm-header">
+      <h2>신혼여행 일정</h2>
+      <button class="btn primary" onclick="addHoneymoonDay()">+ Day 추가</button>
+    </div>
+  `;
+
+  if (days.length === 0) {
+    html += `<div class="timeline-empty" style="text-align:center;padding:3rem;color:var(--ink-light);font-size:14px;background:rgba(255,255,255,0.5);border:1px solid var(--sage-200);">✈️ 아직 일정이 없어요. Day 추가 버튼으로 시작해보세요!</div>`;
+  }
+
+  days.forEach((day, di) => {
+    const items = [...(day.items || [])].sort((a, b) => (a.time || '').localeCompare(b.time || ''));
+    html += `
+      <div class="hm-day">
+        <div class="hm-day-header">
+          <span class="hm-day-label">Day ${di + 1}</span>
+          <input type="date" class="hm-day-date-input" value="${escapeHtml(day.date || '')}"
+                 onchange="setHoneymoonDayDate('${day.id}',this.value)"
+                 onclick="event.stopPropagation()" title="날짜 설정 (선택)">
+          <div style="flex:1"></div>
+          <button class="delete-btn" onclick="deleteHoneymoonDay('${day.id}')"
+                  style="opacity:1;font-size:20px;" title="Day 삭제">×</button>
+        </div>
+        <div class="hm-items">
+          ${items.length === 0 ? `<div class="hm-empty">아직 일정이 없어요</div>` : ''}
+          ${items.map(item => `
+            <div class="hm-item">
+              <div class="hm-item-time">${escapeHtml(item.time || '--:--')}</div>
+              <div class="hm-item-body">
+                <div class="hm-item-place">${escapeHtml(item.place || '')}</div>
+                ${item.memo ? `<div class="hm-item-memo">${escapeHtml(item.memo)}</div>` : ''}
+              </div>
+              <div class="hm-item-actions">
+                <button class="action-btn" onclick="openHmItemModal('${day.id}','${item.id}')" title="편집">
+                  <svg viewBox="0 0 24 24"><path d="M11 4H4v16h16v-7M18.5 2.5a2.12 2.12 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
+                </button>
+                <button class="delete-btn" onclick="deleteHoneymoonItem('${day.id}','${item.id}')" style="opacity:1">×</button>
+              </div>
+            </div>
+          `).join('')}
+          <button class="add-btn" onclick="openHmItemModal('${day.id}',null)">+ 일정 추가</button>
+        </div>
+      </div>
+    `;
+  });
+
+  container.innerHTML = html;
+}
+
+window.addHoneymoonDay = function() {
+  if (!state.honeymoon) state.honeymoon = {days:[]};
+  if (!state.honeymoon.days) state.honeymoon.days = [];
+  state.honeymoon.days.push({ id:'day_'+Date.now(), date:'', items:[] });
+  renderHoneymoon(); saveState();
+};
+
+window.deleteHoneymoonDay = function(dayId) {
+  if (!confirm('이 Day 전체 일정을 삭제할까요?')) return;
+  if (state.honeymoon) state.honeymoon.days = state.honeymoon.days.filter(d => d.id !== dayId);
+  renderHoneymoon(); saveState();
+};
+
+window.setHoneymoonDayDate = function(dayId, dateVal) {
+  const day = state.honeymoon && state.honeymoon.days.find(d => d.id === dayId);
+  if (day) { day.date = dateVal; saveState(); }
+};
+
+window.openHmItemModal = function(dayId, itemId) {
+  hmEditingDayId = dayId;
+  hmEditingItemId = itemId;
+  if (itemId) {
+    const day = state.honeymoon && state.honeymoon.days.find(d => d.id === dayId);
+    const item = day && day.items.find(i => i.id === itemId);
+    if (item) {
+      document.getElementById('hm-item-time').value = item.time || '';
+      document.getElementById('hm-item-place').value = item.place || '';
+      document.getElementById('hm-item-memo').value = item.memo || '';
+      document.getElementById('hm-modal-title').textContent = '일정 수정';
+    }
+  } else {
+    document.getElementById('hm-item-time').value = '';
+    document.getElementById('hm-item-place').value = '';
+    document.getElementById('hm-item-memo').value = '';
+    document.getElementById('hm-modal-title').textContent = '일정 추가';
+  }
+  document.getElementById('hm-item-modal').classList.add('show');
+};
+
+window.closeHmItemModal = function() {
+  document.getElementById('hm-item-modal').classList.remove('show');
+  hmEditingDayId = null; hmEditingItemId = null;
+};
+
+window.saveHoneymoonItem = function() {
+  const time = document.getElementById('hm-item-time').value;
+  const place = document.getElementById('hm-item-place').value.trim();
+  const memo = document.getElementById('hm-item-memo').value.trim();
+  if (!place) { alert('장소 또는 활동을 입력해 주세요'); return; }
+  if (!state.honeymoon) state.honeymoon = {days:[]};
+  const day = state.honeymoon.days.find(d => d.id === hmEditingDayId);
+  if (!day) return;
+  if (!day.items) day.items = [];
+  if (hmEditingItemId) {
+    const item = day.items.find(i => i.id === hmEditingItemId);
+    if (item) { item.time = time; item.place = place; item.memo = memo; }
+  } else {
+    day.items.push({
+      id: 'item_'+Date.now()+'_'+Math.random().toString(36).substr(2,5),
+      time, place, memo
+    });
+  }
+  closeHmItemModal(); renderHoneymoon(); saveState();
+};
+
+window.deleteHoneymoonItem = function(dayId, itemId) {
+  if (!confirm('이 일정을 삭제할까요?')) return;
+  const day = state.honeymoon && state.honeymoon.days.find(d => d.id === dayId);
+  if (day) day.items = day.items.filter(i => i.id !== itemId);
+  renderHoneymoon(); saveState();
+};
+
+/* PWA / SERVICE WORKER / NOTIFICATIONS */
+async function registerServiceWorker() {
+  if (!('serviceWorker' in navigator)) return;
+  try {
+    await navigator.serviceWorker.register('service-worker.js');
+  } catch(e) { console.warn('SW registration failed:', e); }
+}
+
+async function requestNotificationPermission() {
+  if (!('Notification' in window)) return;
+  if (Notification.permission === 'granted' || Notification.permission === 'denied') return;
+  if (localStorage.getItem('wedding_notif_asked')) return;
+  localStorage.setItem('wedding_notif_asked', '1');
+  const result = await Notification.requestPermission();
+  if (result === 'granted') { checkDueDateNotifications(); checkBudgetOverNotification(); }
+}
+
+function checkDueDateNotifications() {
+  if (!('serviceWorker' in navigator) || Notification.permission !== 'granted') return;
+  const data = getData();
+  data.forEach(cat => {
+    cat.items.forEach(item => {
+      if (isChecked(cat.id, item.id)) return;
+      const due = getDueDate(cat.id, item.id);
+      if (!due) return;
+      const d = daysBetween(due);
+      if (d !== 7 && d !== 3 && d !== 1) return;
+      const nKey = `notif_${key(cat.id, item.id)}_D${d}`;
+      if (localStorage.getItem(nKey)) return;
+      navigator.serviceWorker.ready.then(reg => {
+        reg.showNotification(`기한 D-${d} 임박`, {
+          body: item.text,
+          icon: 'icon-192.png',
+          tag: nKey
+        });
+        localStorage.setItem(nKey, '1');
+      }).catch(() => {});
+    });
+  });
+}
+
+function checkBudgetOverNotification() {
+  if (!('serviceWorker' in navigator) || Notification.permission !== 'granted') return;
+  if (!state.budget || !state.budget.totalBudget) return;
+  const entries = state.budget.entries || [];
+  const totalBudget = state.budget.totalBudget || 0;
+  if (totalBudget === 0) return;
+  const spent = entries.reduce((s, e) => s + (e.type === 'income' ? -(parseFloat(e.amount)||0) : (parseFloat(e.amount)||0)), 0);
+  if (spent <= totalBudget) return;
+  const threshold = String(Math.floor(spent / 100000));
+  if (localStorage.getItem('notif_budget_over') === threshold) return;
+  navigator.serviceWorker.ready.then(reg => {
+    reg.showNotification('예산 초과 알림', {
+      body: `총 지출 ${formatWon(spent)}이 설정 예산 ${formatWon(totalBudget)}을 초과했어요`,
+      icon: 'icon-192.png',
+      tag: 'budget_over'
+    });
+    localStorage.setItem('notif_budget_over', threshold);
+  }).catch(() => {});
+}
+
+function checkPartnerChecks(prevLastUpdate, newLastUpdate) {
+  if (!('serviceWorker' in navigator) || Notification.permission !== 'granted') return;
+  Object.keys(newLastUpdate).forEach(k => {
+    const info = newLastUpdate[k];
+    if (!info || info.by === userName) return;
+    if (prevLastUpdate[k]) return;
+    const [catId, itemId] = k.split('__');
+    const cat = defaultData.find(c => c.id === catId);
+    const item = cat && cat.items.find(i => i.id === itemId);
+    const text = item ? item.text : k;
+    navigator.serviceWorker.ready.then(reg => {
+      reg.showNotification(`${escapeHtml(info.by)}이(가) 체크했어요`, {
+        body: text,
+        icon: 'icon-192.png',
+        tag: 'partner_check_' + k
+      });
+    }).catch(() => {});
+  });
+}
+
 /* EXCEL */
 window.handleExcelImport = function(event) {
   const file = event.target.files[0]; if (!file) return;
@@ -1572,6 +1869,7 @@ document.getElementById('budget-modal').addEventListener('click',e=>{if(e.target
 document.getElementById('set-budget-modal').addEventListener('click',e=>{if(e.target.id==='set-budget-modal')closeSetBudgetModal();});
 document.getElementById('date-modal').addEventListener('click',e=>{if(e.target.id==='date-modal')closeDateModal();});
 document.getElementById('settings-modal').addEventListener('click',e=>{if(e.target.id==='settings-modal')closeSettings();});
+document.getElementById('hm-item-modal').addEventListener('click',e=>{if(e.target.id==='hm-item-modal')closeHmItemModal();});
 </script>
 </body>
 </html>
