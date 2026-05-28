@@ -1,38 +1,52 @@
-const CACHE_NAME = 'wedding-app-v1';
+const CACHE_NAME = 'wedding-app-v2';
 const CACHE_URLS = [
   '.',
   './index.html',
   './manifest.json'
 ];
 
+// ── Install: 핵심 파일 캐시 후 즉시 활성화 ──
 self.addEventListener('install', event => {
   event.waitUntil(
     caches.open(CACHE_NAME).then(cache => cache.addAll(CACHE_URLS))
   );
-  self.skipWaiting();
+  self.skipWaiting(); // waiting 없이 바로 activate로 진입
 });
 
+// ── Activate: 구 버전 캐시 전부 삭제 후 즉시 제어권 확보 ──
 self.addEventListener('activate', event => {
   event.waitUntil(
-    caches.keys().then(keys =>
-      Promise.all(keys.filter(k => k !== CACHE_NAME).map(k => caches.delete(k)))
-    )
+    caches.keys()
+      .then(keys => Promise.all(
+        keys.filter(k => k !== CACHE_NAME).map(k => caches.delete(k))
+      ))
+      .then(() => self.clients.claim()) // 열려 있는 탭 즉시 장악
   );
-  self.clients.claim();
 });
 
+// ── Fetch: Network-First 전략 ──
+// Firebase / CDN은 항상 네트워크, 앱 파일은 네트워크 우선 → 실패 시 캐시
 self.addEventListener('fetch', event => {
-  // Firebase / CDN 요청은 캐시하지 않음
   const url = event.request.url;
+
+  // Firebase / CDN 요청은 캐시 없이 네트워크만
   if (url.includes('firestore.googleapis.com') ||
       url.includes('firebase') ||
       url.includes('gstatic.com') ||
       url.includes('cdnjs.cloudflare.com')) {
-    event.respondWith(fetch(event.request));
-    return;
+    return; // 기본 fetch 동작에 맡김
   }
+
+  // 앱 파일: 네트워크 우선, 실패 시 캐시로 폴백
   event.respondWith(
-    caches.match(event.request).then(cached => cached || fetch(event.request))
+    fetch(event.request)
+      .then(response => {
+        // 성공하면 캐시도 업데이트
+        const clone = response.clone();
+        caches.open(CACHE_NAME).then(cache => cache.put(event.request, clone));
+        return response;
+      })
+      .catch(() => caches.match(event.request)) // 오프라인 시 캐시 사용
   );
 });
 
