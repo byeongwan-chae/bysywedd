@@ -867,6 +867,30 @@ const DEFAULT_HONEYMOON = { days:[
   ]}
 ]};
 
+const DEFAULT_BUDGET_ENTRIES = [
+  { desc:'더라움 결혼식',               amount:56815330, category:'예식장',    memo:'총 금액' },
+  { desc:'더채플앳 논현 위약금',         amount:300000,   category:'예식장',    memo:'위약금' },
+  { desc:'무이스튜디오 남산',            amount:2200000,  category:'스튜디오',  memo:'스튜디오 촬영' },
+  { desc:'위위 촬영 메이크업',           amount:220000,   category:'스튜디오',  memo:'촬영 메이크업' },
+  { desc:'로즈앤모어 플라워디자인',      amount:520000,   category:'스튜디오',  memo:'플디' },
+  { desc:'언아더데이 본식 스냅',         amount:1600000,  category:'스튜디오',  memo:'본식 스냅' },
+  { desc:'오브하우스 아이폰 스냅',       amount:520000,   category:'스튜디오',  memo:'아이폰 스냅' },
+  { desc:'잉필름 본식 DVD',             amount:680000,   category:'스튜디오',  memo:'본식 DVD' },
+  { desc:'케일라베넷 드레스',            amount:5040000,  category:'드레스/예복', memo:'총 금액' },
+  { desc:'아프롬 신랑 예복',             amount:2350000,  category:'드레스/예복', memo:'' },
+  { desc:'이탈리아 항공권',              amount:3173200,  category:'신혼여행',  memo:'항공권' },
+  { desc:'렌터카',                      amount:524556,   category:'신혼여행',  memo:'렌트' },
+  { desc:'부쉐론 웨딩밴드(신부)',        amount:3690000,  category:'예단/예물', memo:'신부' },
+  { desc:'부쉐론 웨딩밴드(신랑)',        amount:3840000,  category:'예단/예물', memo:'신랑' },
+  { desc:'도헤주얼리 가드링',            amount:790000,   category:'예단/예물', memo:'가드링' },
+  { desc:'까르띠에 예물 시계(신부)',     amount:10080000, category:'예단/예물', memo:'신부' },
+  { desc:'위위아뜰리에 본식 메이크업',   amount:770000,   category:'기타',     memo:'본식 메이크업' },
+  { desc:'헤어변형수연',                 amount:300000,   category:'기타',     memo:'헤어 변형' },
+  { desc:'베리굿 오주희 플래너',         amount:496800,   category:'기타',     memo:'계약금' },
+  { desc:'뷰티진동희 가족 꾸밈비(신랑)', amount:935000,   category:'기타',     memo:'신랑 가족' },
+  { desc:'가족 꾸밈비(신부)',            amount:1243000,  category:'기타',     memo:'신부 가족' },
+];
+
 const defaultData = [
   { id: 'venue', title: '예식장 & 장소', items: [
     { id: 'v1', text: '예식장 후보 리스트업',          tag:'Essential', daysBeforeWedding: 540 },
@@ -933,7 +957,8 @@ let state = {
   memos:{}, dueDates:{}, photos:{}, deleted:{},
   budget:{entries:[],totalBudget:0},
   background:null,
-  honeymoon:{days:[]}
+  honeymoon:{days:[]},
+  budgetSeeded:false
 };
 let collapsed = {}, addingIn = {}, expandedItem = null;
 let unsubscribe = null, isApplyingRemote = false;
@@ -997,8 +1022,23 @@ function startSync() {
         deleted: d.deleted||{},
         budget: d.budget||{entries:[],totalBudget:0},
         background: d.background||null,
-        honeymoon: d.honeymoon||{days:[]}
+        honeymoon: d.honeymoon||{days:[]},
+        budgetSeeded: d.budgetSeeded||false
       };
+      // 최초 1회만 기본 지출 데이터 시딩
+      let needsSeed = false;
+      if (!state.budgetSeeded && (!state.budget.entries || state.budget.entries.length === 0)) {
+        needsSeed = true;
+        state.budgetSeeded = true;
+        const today = new Date().toISOString().slice(0, 10);
+        const now = new Date().toISOString();
+        state.budget.entries = DEFAULT_BUDGET_ENTRIES.map((e, i) => ({
+          id: 'b_seed_' + i + '_' + Date.now(),
+          desc: e.desc, amount: e.amount, category: e.category,
+          memo: e.memo, date: today, type: 'expense',
+          by: userName || '', createdAt: now
+        }));
+      }
       applyBackground();
       render(); renderTimeline(); renderBudget(); renderHoneymoon();
       if (!firstSync) checkPartnerChecks(prevLastUpdate, state.lastUpdate||{});
@@ -1006,9 +1046,10 @@ function startSync() {
       checkBudgetOverNotification();
       firstSync = false;
       isApplyingRemote = false;
+      if (needsSeed) saveState();
       document.getElementById('sync-text').textContent = 'Live';
     } else {
-      setDoc(docRef, { checked:{},custom:{},lastUpdate:{},memos:{},dueDates:{},photos:{},deleted:{},budget:{entries:[],totalBudget:0},background:null,honeymoon:{days:[]} });
+      setDoc(docRef, { checked:{},custom:{},lastUpdate:{},memos:{},dueDates:{},photos:{},deleted:{},budget:{entries:[],totalBudget:0},background:null,honeymoon:{days:[]},budgetSeeded:false });
     }
   }, err => { console.error(err); document.getElementById('sync-text').textContent = 'Offline'; });
 }
