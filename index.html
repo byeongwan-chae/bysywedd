@@ -1025,19 +1025,36 @@ function startSync() {
         honeymoon: d.honeymoon||{days:[]},
         budgetSeeded: d.budgetSeeded||false
       };
-      // 최초 1회만 기본 지출 데이터 시딩
+      // entries가 비어있으면 기본 지출 데이터 시딩 (budgetSeeded 플래그 오염 방어)
       let needsSeed = false;
-      if (!state.budgetSeeded && (!state.budget.entries || state.budget.entries.length === 0)) {
+      if (!state.budget.entries || !Array.isArray(state.budget.entries) || state.budget.entries.length === 0) {
         needsSeed = true;
         state.budgetSeeded = true;
         const today = new Date().toISOString().slice(0, 10);
         const now = new Date().toISOString();
-        state.budget.entries = DEFAULT_BUDGET_ENTRIES.map((e, i) => ({
-          id: 'b_seed_' + i + '_' + Date.now(),
-          desc: e.desc, amount: e.amount, category: e.category,
-          memo: e.memo, date: today, type: 'expense',
-          by: userName || '', createdAt: now
-        }));
+        state.budget.entries = [
+          { id:'b_seed_0_'+Date.now(),  desc:'더라움 결혼식',               amount:56815330,  category:'예식장',    memo:'총 금액',        date:today, type:'expense', by:userName||'', createdAt:now },
+          { id:'b_seed_1_'+Date.now(),  desc:'더채플앳 논현 위약금',         amount:300000,    category:'예식장',    memo:'위약금',         date:today, type:'expense', by:userName||'', createdAt:now },
+          { id:'b_seed_2_'+Date.now(),  desc:'무이스튜디오 남산',            amount:2200000,   category:'스튜디오',  memo:'스튜디오 촬영',  date:today, type:'expense', by:userName||'', createdAt:now },
+          { id:'b_seed_3_'+Date.now(),  desc:'위위 촬영 메이크업',           amount:220000,    category:'스튜디오',  memo:'촬영 메이크업',  date:today, type:'expense', by:userName||'', createdAt:now },
+          { id:'b_seed_4_'+Date.now(),  desc:'로즈앤모어 플라워디자인',      amount:520000,    category:'스튜디오',  memo:'플디',           date:today, type:'expense', by:userName||'', createdAt:now },
+          { id:'b_seed_5_'+Date.now(),  desc:'언아더데이 본식 스냅',         amount:1600000,   category:'스튜디오',  memo:'본식 스냅',      date:today, type:'expense', by:userName||'', createdAt:now },
+          { id:'b_seed_6_'+Date.now(),  desc:'오브하우스 아이폰 스냅',       amount:520000,    category:'스튜디오',  memo:'아이폰 스냅',    date:today, type:'expense', by:userName||'', createdAt:now },
+          { id:'b_seed_7_'+Date.now(),  desc:'잉필름 본식 DVD',             amount:680000,    category:'스튜디오',  memo:'본식 DVD',       date:today, type:'expense', by:userName||'', createdAt:now },
+          { id:'b_seed_8_'+Date.now(),  desc:'케일라베넷 드레스',            amount:5040000,   category:'드레스/예복', memo:'총 금액',      date:today, type:'expense', by:userName||'', createdAt:now },
+          { id:'b_seed_9_'+Date.now(),  desc:'아프롬 신랑 예복',             amount:2350000,   category:'드레스/예복', memo:'',             date:today, type:'expense', by:userName||'', createdAt:now },
+          { id:'b_seed_10_'+Date.now(), desc:'이탈리아 항공권',              amount:3173200,   category:'신혼여행',  memo:'항공권',         date:today, type:'expense', by:userName||'', createdAt:now },
+          { id:'b_seed_11_'+Date.now(), desc:'렌터카',                      amount:524556,    category:'신혼여행',  memo:'렌트',           date:today, type:'expense', by:userName||'', createdAt:now },
+          { id:'b_seed_12_'+Date.now(), desc:'부쉐론 웨딩밴드(신부)',        amount:3690000,   category:'예단/예물', memo:'신부',           date:today, type:'expense', by:userName||'', createdAt:now },
+          { id:'b_seed_13_'+Date.now(), desc:'부쉐론 웨딩밴드(신랑)',        amount:3840000,   category:'예단/예물', memo:'신랑',           date:today, type:'expense', by:userName||'', createdAt:now },
+          { id:'b_seed_14_'+Date.now(), desc:'도헤주얼리 가드링',            amount:790000,    category:'예단/예물', memo:'가드링',         date:today, type:'expense', by:userName||'', createdAt:now },
+          { id:'b_seed_15_'+Date.now(), desc:'까르띠에 예물 시계(신부)',     amount:10080000,  category:'예단/예물', memo:'신부',           date:today, type:'expense', by:userName||'', createdAt:now },
+          { id:'b_seed_16_'+Date.now(), desc:'위위아뜰리에 본식 메이크업',   amount:770000,    category:'기타',     memo:'본식 메이크업',  date:today, type:'expense', by:userName||'', createdAt:now },
+          { id:'b_seed_17_'+Date.now(), desc:'헤어변형수연',                 amount:300000,    category:'기타',     memo:'헤어 변형',      date:today, type:'expense', by:userName||'', createdAt:now },
+          { id:'b_seed_18_'+Date.now(), desc:'베리굿 오주희 플래너',         amount:496800,    category:'기타',     memo:'계약금',         date:today, type:'expense', by:userName||'', createdAt:now },
+          { id:'b_seed_19_'+Date.now(), desc:'뷰티진동희 가족 꾸밈비(신랑)', amount:935000,    category:'기타',     memo:'신랑 가족',      date:today, type:'expense', by:userName||'', createdAt:now },
+          { id:'b_seed_20_'+Date.now(), desc:'가족 꾸밈비(신부)',            amount:1243000,   category:'기타',     memo:'신부 가족',      date:today, type:'expense', by:userName||'', createdAt:now },
+        ];
       }
       applyBackground();
       render(); renderTimeline(); renderBudget(); renderHoneymoon();
