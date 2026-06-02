@@ -660,6 +660,7 @@ body {
         <div class="filter-chip" data-cat="예식장" onclick="filterBudget('예식장')">예식장</div>
         <div class="filter-chip" data-cat="스튜디오" onclick="filterBudget('스튜디오')">스튜디오</div>
         <div class="filter-chip" data-cat="드레스/예복" onclick="filterBudget('드레스/예복')">드레스/예복</div>
+        <div class="filter-chip" data-cat="메이크업" onclick="filterBudget('메이크업')">메이크업</div>
         <div class="filter-chip" data-cat="청첩장" onclick="filterBudget('청첩장')">청첩장</div>
         <div class="filter-chip" data-cat="신혼여행" onclick="filterBudget('신혼여행')">신혼여행</div>
         <div class="filter-chip" data-cat="신혼집" onclick="filterBudget('신혼집')">신혼집</div>
@@ -710,7 +711,8 @@ body {
       <label class="form-label">카테고리</label>
       <select id="entry-category" class="form-select">
         <option value="예식장">예식장</option><option value="스튜디오">스튜디오</option>
-        <option value="드레스/예복">드레스/예복</option><option value="청첩장">청첩장</option>
+        <option value="드레스/예복">드레스/예복</option><option value="메이크업">메이크업</option>
+        <option value="청첩장">청첩장</option>
         <option value="신혼여행">신혼여행</option><option value="신혼집">신혼집</option>
         <option value="예단/예물">예단/예물</option><option value="기타">기타</option>
       </select>
@@ -1049,11 +1051,11 @@ function startSync() {
           { id:'b_seed_13_'+Date.now(), desc:'부쉐론 웨딩밴드(신랑)',        amount:3840000,   category:'예단/예물', memo:'신랑',           date:today, type:'expense', by:userName||'', createdAt:now },
           { id:'b_seed_14_'+Date.now(), desc:'도헤주얼리 가드링',            amount:790000,    category:'예단/예물', memo:'가드링',         date:today, type:'expense', by:userName||'', createdAt:now },
           { id:'b_seed_15_'+Date.now(), desc:'까르띠에 예물 시계(신부)',     amount:10080000,  category:'예단/예물', memo:'신부',           date:today, type:'expense', by:userName||'', createdAt:now },
-          { id:'b_seed_16_'+Date.now(), desc:'위위아뜰리에 본식 메이크업',   amount:770000,    category:'기타',     memo:'본식 메이크업',  date:today, type:'expense', by:userName||'', createdAt:now },
-          { id:'b_seed_17_'+Date.now(), desc:'헤어변형수연',                 amount:300000,    category:'기타',     memo:'헤어 변형',      date:today, type:'expense', by:userName||'', createdAt:now },
+          { id:'b_seed_16_'+Date.now(), desc:'위위아뜰리에 본식 메이크업',   amount:770000,    category:'메이크업', memo:'본식 메이크업',  date:today, type:'expense', by:userName||'', createdAt:now },
+          { id:'b_seed_17_'+Date.now(), desc:'헤어변형수연',                 amount:300000,    category:'메이크업', memo:'헤어 변형',      date:today, type:'expense', by:userName||'', createdAt:now },
           { id:'b_seed_18_'+Date.now(), desc:'베리굿 오주희 플래너',         amount:496800,    category:'기타',     memo:'계약금',         date:today, type:'expense', by:userName||'', createdAt:now },
-          { id:'b_seed_19_'+Date.now(), desc:'뷰티진동희 가족 꾸밈비(신랑)', amount:935000,    category:'기타',     memo:'신랑 가족',      date:today, type:'expense', by:userName||'', createdAt:now },
-          { id:'b_seed_20_'+Date.now(), desc:'가족 꾸밈비(신부)',            amount:1243000,   category:'기타',     memo:'신부 가족',      date:today, type:'expense', by:userName||'', createdAt:now },
+          { id:'b_seed_19_'+Date.now(), desc:'뷰티진동희 가족 꾸밈비(신랑)', amount:935000,    category:'메이크업', memo:'신랑 가족',      date:today, type:'expense', by:userName||'', createdAt:now },
+          { id:'b_seed_20_'+Date.now(), desc:'가족 꾸밈비(신부)',            amount:1243000,   category:'메이크업', memo:'신부 가족',      date:today, type:'expense', by:userName||'', createdAt:now },
         ];
       }
       applyBackground();
