@@ -1695,6 +1695,20 @@ function renderBudget() {
       </div>
     `;
   });
+  if (currentFilter !== 'all') {
+    const subtotalExp = filtered.filter(e=>e.type!=='income').reduce((s,e)=>s+(parseFloat(e.amount)||0),0);
+    const subtotalInc = filtered.filter(e=>e.type==='income').reduce((s,e)=>s+(parseFloat(e.amount)||0),0);
+    const subtotal = subtotalExp - subtotalInc;
+    html += `
+      <div class="budget-row" style="background:var(--sage-50);border-top:1px solid var(--sage-200);cursor:default;" onmouseenter="" onmouseleave="">
+        <div class="budget-date" style="font-size:10px;letter-spacing:0.10em;text-transform:uppercase;color:var(--ink-soft);">소계</div>
+        <div style="font-size:12px;color:var(--ink-soft);">${filtered.length}건</div>
+        <div class="budget-cat"></div>
+        <div class="budget-amount expense" style="font-size:15px;font-weight:500;">-${formatWon(subtotal)}</div>
+        <div></div>
+      </div>
+    `;
+  }
   tableEl.innerHTML = html;
 }
 
