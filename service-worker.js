@@ -62,20 +62,22 @@ self.addEventListener('fetch', event => {
 // 4. 아래 push 이벤트 핸들러의 주석을 해제하세요.
 // ──────────────────────────────────────────
 
-/*
+// 백그라운드 푸시 수신 핸들러 (FCM onBackgroundMessage에 해당)
+// FCM은 Web Push Protocol을 통해 이 push 이벤트로 메시지를 전달합니다
 self.addEventListener('push', event => {
-  const data = event.data ? event.data.json() : {};
-  const title = data.title || '우리의 결혼 준비';
+  const payload = event.data ? event.data.json() : {};
+  // FCM 페이로드 형식: { notification: { title, body }, data: {...} }
+  const notif = payload.notification || {};
+  const title = notif.title || payload.title || '우리의 결혼 준비';
   const options = {
-    body: data.body || '',
-    icon: '/icon-192.png',
+    body: notif.body || payload.body || '',
+    icon: notif.icon || '/icon-192.png',
     badge: '/icon-192.png',
-    tag: data.tag || 'wedding-notification',
-    data: data
+    tag: (payload.data && payload.data.tag) || 'wedding-notification',
+    data: payload.data || {}
   };
   event.waitUntil(self.registration.showNotification(title, options));
 });
-*/
 
 self.addEventListener('notificationclick', event => {
   event.notification.close();

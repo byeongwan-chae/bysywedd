@@ -806,8 +806,9 @@ body {
 
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
-import { getFirestore, doc, setDoc, onSnapshot } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+import { getFirestore, doc, setDoc, onSnapshot, updateDoc, arrayUnion } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
 import { getStorage, ref, uploadBytes, getDownloadURL, deleteObject } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-storage.js";
+import { getMessaging, getToken } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-messaging.js";
 
 const firebaseConfig = {
   apiKey: "AIzaSyC6UPuWD-YpBlEpa1iHrhAr0VLraq0SpjA",
@@ -821,6 +822,7 @@ const firebaseConfig = {
 const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
 const storage = getStorage(app);
+const messaging = getMessaging(app);
 const WEDDING_DATE = '2026-11-15';
 
 const HONEYMOON_COSTS = [
@@ -954,6 +956,7 @@ const defaultData = [
 ];
 
 let coupleCode = null, userName = null;
+let swRegistration = null;
 let state = {
   checked:{}, custom:{}, lastUpdate:{},
   memos:{}, dueDates:{}, photos:{}, deleted:{},
@@ -1877,6 +1880,7 @@ async function registerServiceWorker() {
   if (!('serviceWorker' in navigator)) return;
   try {
     const reg = await navigator.serviceWorker.register('service-worker.js');
+    swRegistration = reg;
 
     // 새 서비스 워커가 설치되면 감지
     reg.addEventListener('updatefound', () => {
@@ -1903,11 +1907,42 @@ async function registerServiceWorker() {
 
 async function requestNotificationPermission() {
   if (!('Notification' in window)) return;
-  if (Notification.permission === 'granted' || Notification.permission === 'denied') return;
-  if (localStorage.getItem('wedding_notif_asked')) return;
-  localStorage.setItem('wedding_notif_asked', '1');
-  const result = await Notification.requestPermission();
-  if (result === 'granted') { checkDueDateNotifications(); checkBudgetOverNotification(); }
+  if (Notification.permission === 'denied') return;
+
+  if (Notification.permission !== 'granted') {
+    if (localStorage.getItem('wedding_notif_asked')) return;
+    localStorage.setItem('wedding_notif_asked', '1');
+    const result = await Notification.requestPermission();
+    if (result !== 'granted') return;
+  }
+
+  checkDueDateNotifications();
+  checkBudgetOverNotification();
+  await registerFCMToken();
+}
+
+async function registerFCMToken() {
+  if (!swRegistration) return;
+  try {
+    // VAPID 키: Firebase 콘솔 > 프로젝트 설정 > 클라우드 메시징 > 웹 푸시 인증서에서 발급 후 아래 값을 교체하세요
+    const VAPID_KEY = 'YOUR_VAPID_KEY_HERE';
+    const token = await getToken(messaging, {
+      vapidKey: VAPID_KEY,
+      serviceWorkerRegistration: swRegistration
+    });
+    if (!token) return;
+
+    // 동일 토큰 중복 저장 방지
+    const cacheKey = `fcm_token_${coupleCode}`;
+    if (localStorage.getItem(cacheKey) === token) return;
+
+    await updateDoc(doc(db, 'weddings', coupleCode), {
+      fcmTokens: arrayUnion({ name: userName, token, registeredAt: new Date().toISOString() })
+    });
+    localStorage.setItem(cacheKey, token);
+  } catch(e) {
+    console.warn('FCM token registration failed:', e);
+  }
 }
 
 function checkDueDateNotifications() {
