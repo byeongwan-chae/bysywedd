@@ -1924,8 +1924,8 @@ async function requestNotificationPermission() {
 async function registerFCMToken() {
   if (!swRegistration) return;
   try {
-    // VAPID 키: Firebase 콘솔 > 프로젝트 설정 > 클라우드 메시징 > 웹 푸시 인증서에서 발급 후 아래 값을 교체하세요
-    const VAPID_KEY = 'YOUR_VAPID_KEY_HERE';
+    // VAPID 키: Firebase 콘솔 > 프로젝트 설정 > 클라우드 메시징 > 웹 푸시 인증서
+    const VAPID_KEY = 'BKsxOIAE5EUg5Pab0ELi_98_pKzhgXg_O1SvTV3fY8RgwAuqDm2qypJIEDFK0HzcGYG4gz8TFHGIbgzbuQ2PshA';
     const token = await getToken(messaging, {
       vapidKey: VAPID_KEY,
       serviceWorkerRegistration: swRegistration
