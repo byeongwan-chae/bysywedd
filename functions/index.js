@@ -187,13 +187,20 @@ function resolveActorByKey(k, data) {
 exports.onWeddingUpdated = onDocumentUpdated(
   "weddings/{coupleCode}",
   async (event) => {
+    const coupleCode = event.params.coupleCode;
+    console.log(`[${coupleCode}] onWeddingUpdated 트리거됨`);
+
     const before = event.data.before.data();
     const after = event.data.after.data();
 
     if (!before || !after) return null;
 
     const fcmTokens = after.fcmTokens || [];
-    if (fcmTokens.length === 0) return null;
+    console.log(`[${coupleCode}] fcmTokens 개수: ${fcmTokens.length}`);
+    if (fcmTokens.length === 0) {
+      console.log(`[${coupleCode}] fcmTokens 없음 — 알림 스킵`);
+      return null;
+    }
 
     // 이번 변경을 일으킨 사람 판단:
     // lastUpdate 중 가장 최신 항목의 by를 actor로 사용
@@ -215,32 +222,43 @@ exports.onWeddingUpdated = onDocumentUpdated(
       const newEntry = afterEntries.find((e) => !beforeIds.has(e.id));
       if (newEntry) actor = newEntry.by;
     }
+    console.log(`[${coupleCode}] 변경자(actor): ${actor || "알수없음"}`);
 
     const notifications = buildNotifications(before, after);
-    if (notifications.length === 0) return null;
+    if (notifications.length === 0) {
+      console.log(`[${coupleCode}] 알림 대상 변경 없음 — 스킵`);
+      return null;
+    }
 
     // 대표 알림 하나만 전송 (여러 변경이 동시에 일어나도 알림 폭탄 방지)
     const notif = notifications[0];
 
     // actor와 다른 사람의 토큰만 추출
-    const targetTokens = fcmTokens
-      .filter((t) => t.token && t.name !== actor)
-      .map((t) => t.token);
+    const targetEntries = fcmTokens.filter((t) => t.token && t.name !== actor);
+    const excludedEntries = fcmTokens.filter((t) => t.name === actor);
+    console.log(
+      `[${coupleCode}] 발송 대상: ${targetEntries.map((t) => t.name).join(", ") || "없음"} / 본인 제외: ${
+        excludedEntries.map((t) => t.name).join(", ") || "없음"
+      }`
+    );
 
-    if (targetTokens.length === 0) return null;
+    if (targetEntries.length === 0) {
+      console.log(`[${coupleCode}] 발송 대상 토큰 없음 — 스킵`);
+      return null;
+    }
 
     const messaging = getMessaging();
     const results = await Promise.allSettled(
-      targetTokens.map((token) =>
+      targetEntries.map((t) =>
         messaging.send({
-          token,
+          token: t.token,
           notification: {
             title: notif.title,
             body: notif.body,
           },
           data: {
             tag: notif.tag,
-            coupleCode: event.params.coupleCode,
+            coupleCode,
           },
           webpush: {
             notification: {
@@ -256,10 +274,21 @@ exports.onWeddingUpdated = onDocumentUpdated(
       )
     );
 
+    results.forEach((r, i) => {
+      const name = targetEntries[i].name || "이름없음";
+      if (r.status === "fulfilled") {
+        console.log(`[${coupleCode}] ${name} 발송 성공 (messageId: ${r.value})`);
+      } else {
+        console.error(
+          `[${coupleCode}] ${name} 발송 실패: ${(r.reason && r.reason.message) || r.reason}`
+        );
+      }
+    });
+
     const succeeded = results.filter((r) => r.status === "fulfilled").length;
     const failed = results.filter((r) => r.status === "rejected").length;
     console.log(
-      `[${event.params.coupleCode}] 알림 전송: ${succeeded}성공 ${failed}실패 / "${notif.title}" — ${notif.body}`
+      `[${coupleCode}] 알림 전송 결과: ${succeeded}성공 ${failed}실패 / "${notif.title}" — ${notif.body}`
     );
 
     return null;
