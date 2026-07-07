@@ -928,7 +928,11 @@ window.login = function() {
   updateDday();
   startSync();
   registerServiceWorker();
-  setTimeout(requestNotificationPermission, 2000);
+  console.log('[FCM] 로그인 완료 — 2초 후 requestNotificationPermission 실행 예약');
+  setTimeout(() => {
+    console.log('[FCM] setTimeout 콜백 트리거됨 (예약 2초 경과)');
+    requestNotificationPermission();
+  }, 2000);
 };
 
 window.logout = function() {
@@ -1777,10 +1781,14 @@ async function registerServiceWorker() {
 }
 
 async function requestNotificationPermission() {
-  console.log('[FCM] requestNotificationPermission 시작');
+  console.log('[FCM] requestNotificationPermission 함수 호출됨 (setTimeout 콜백 실행 확인용 로그)', new Date().toISOString());
+  console.log('[FCM] 환경 진단 — userAgent:', navigator.userAgent);
+  console.log('[FCM] 환경 진단 — navigator.standalone(iOS 홈화면 PWA 여부):', navigator.standalone);
+  console.log('[FCM] 환경 진단 — matchMedia(display-mode: standalone):',
+    window.matchMedia ? window.matchMedia('(display-mode: standalone)').matches : 'matchMedia 미지원');
 
   if (!('Notification' in window)) {
-    console.log('[FCM] 이 브라우저는 Notification API를 지원하지 않음 — 중단');
+    console.log('[FCM] "Notification" in window === false — 이 환경은 Notification API 미지원(iOS 16.4 미만 Safari이거나 홈화면 미설치 상태일 수 있음) — 중단');
     return;
   }
   console.log('[FCM] 현재 Notification.permission:', Notification.permission);
@@ -1791,12 +1799,13 @@ async function requestNotificationPermission() {
   }
 
   if (Notification.permission !== 'granted') {
-    if (localStorage.getItem('wedding_notif_asked')) {
-      console.log('[FCM] 이전에 이미 권한을 요청한 적 있음(wedding_notif_asked) — 재요청 안 함, 중단');
-      return;
-    }
+    // 이 시점에서 permission은 항상 'default'(아직 결정 안 됨).
+    // 이전에 요청 이력이 있어도(wedding_notif_asked) 실제 권한이 아직 default라면
+    // 플래그와 무관하게 항상 재시도한다 — 이전 요청이 iOS 등 환경 문제로
+    // 조용히 실패했을 수 있으므로 플래그만 믿고 영구히 스킵하면 안 됨.
+    console.log('[FCM] wedding_notif_asked 플래그:', !!localStorage.getItem('wedding_notif_asked'), '— permission이 default이므로 플래그 무관하게 재요청 진행');
     localStorage.setItem('wedding_notif_asked', '1');
-    console.log('[FCM] 브라우저에 알림 권한 요청 중...');
+    console.log('[FCM] Notification.requestPermission() 호출 직전');
     const result = await Notification.requestPermission();
     console.log('[FCM] 권한 요청 결과:', result);
     if (result !== 'granted') {
