@@ -1777,42 +1777,84 @@ async function registerServiceWorker() {
 }
 
 async function requestNotificationPermission() {
-  if (!('Notification' in window)) return;
-  if (Notification.permission === 'denied') return;
+  console.log('[FCM] requestNotificationPermission 시작');
+
+  if (!('Notification' in window)) {
+    console.log('[FCM] 이 브라우저는 Notification API를 지원하지 않음 — 중단');
+    return;
+  }
+  console.log('[FCM] 현재 Notification.permission:', Notification.permission);
+
+  if (Notification.permission === 'denied') {
+    console.log('[FCM] 알림 권한이 거부된 상태 — 중단');
+    return;
+  }
 
   if (Notification.permission !== 'granted') {
-    if (localStorage.getItem('wedding_notif_asked')) return;
+    if (localStorage.getItem('wedding_notif_asked')) {
+      console.log('[FCM] 이전에 이미 권한을 요청한 적 있음(wedding_notif_asked) — 재요청 안 함, 중단');
+      return;
+    }
     localStorage.setItem('wedding_notif_asked', '1');
+    console.log('[FCM] 브라우저에 알림 권한 요청 중...');
     const result = await Notification.requestPermission();
-    if (result !== 'granted') return;
+    console.log('[FCM] 권한 요청 결과:', result);
+    if (result !== 'granted') {
+      console.log('[FCM] 권한이 허용되지 않음 — 중단');
+      return;
+    }
   }
 
   checkDueDateNotifications();
   checkBudgetOverNotification();
+  console.log('[FCM] registerFCMToken() 호출');
   await registerFCMToken();
 }
 
 async function registerFCMToken() {
-  if (!swRegistration) return;
+  console.log('[FCM] registerFCMToken 시작, swRegistration:', !!swRegistration);
+  if (!swRegistration) {
+    console.log('[FCM] swRegistration이 없음(서비스워커 미등록) — 중단');
+    return;
+  }
+
+  // VAPID 키: Firebase 콘솔 > 프로젝트 설정 > 클라우드 메시징 > 웹 푸시 인증서
+  const VAPID_KEY = 'BKsxOIAE5EUg5Pab0ELi_98_pKzhgXg_O1SvTV3fY8RgwAuqDm2qypJIEDFK0HzcGYG4gz8TFHGIbgzbuQ2PshA';
+  console.log('[FCM] VAPID_KEY 길이:', VAPID_KEY.length, '/ 앞 10자:', VAPID_KEY.slice(0, 10));
+
+  let token;
   try {
-    // VAPID 키: Firebase 콘솔 > 프로젝트 설정 > 클라우드 메시징 > 웹 푸시 인증서
-    const VAPID_KEY = 'BKsxOIAE5EUg5Pab0ELi_98_pKzhgXg_O1SvTV3fY8RgwAuqDm2qypJIEDFK0HzcGYG4gz8TFHGIbgzbuQ2PshA';
-    const token = await getToken(messaging, {
+    token = await getToken(messaging, {
       vapidKey: VAPID_KEY,
       serviceWorkerRegistration: swRegistration
     });
-    if (!token) return;
+    console.log('[FCM] getToken() 성공, token:', token ? token.slice(0, 20) + '...' : token);
+  } catch(e) {
+    console.error('[FCM] getToken() 실패:', e.code, e.message, e);
+    return;
+  }
 
-    // 동일 토큰 중복 저장 방지
-    const cacheKey = `fcm_token_${coupleCode}`;
-    if (localStorage.getItem(cacheKey) === token) return;
+  if (!token) {
+    console.log('[FCM] token이 비어있음 — 중단');
+    return;
+  }
 
+  // 동일 토큰 중복 저장 방지
+  const cacheKey = `fcm_token_${coupleCode}`;
+  if (localStorage.getItem(cacheKey) === token) {
+    console.log('[FCM] 이미 동일 토큰이 저장되어 있음(캐시 일치) — Firestore 저장 스킵');
+    return;
+  }
+
+  try {
+    console.log('[FCM] Firestore에 토큰 저장 시도:', { coupleCode, userName });
     await updateDoc(doc(db, 'weddings', coupleCode), {
       fcmTokens: arrayUnion({ name: userName, token, registeredAt: new Date().toISOString() })
     });
     localStorage.setItem(cacheKey, token);
+    console.log('[FCM] Firestore 저장 성공, localStorage 캐시 갱신 완료');
   } catch(e) {
-    console.warn('FCM token registration failed:', e);
+    console.error('[FCM] Firestore 저장 실패:', e.code, e.message, e);
   }
 }
 
