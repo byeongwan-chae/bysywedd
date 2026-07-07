@@ -825,76 +825,6 @@ const storage = getStorage(app);
 const messaging = getMessaging(app);
 const WEDDING_DATE = '2026-11-15';
 
-const HONEYMOON_COSTS = [
-  { label:'로마 · Camplus Hotel Roma Centro (3박)', amount:902383 },
-  { label:'토스카나 · 테라안티카 (2박)',             amount:909702 },
-  { label:'레리치 · Doria Park Hotel (1박)',        amount:709991 },
-  { label:'렌터카 (7일)',                            amount:520000 },
-];
-const HONEYMOON_TOTAL = 3042076;
-
-const DEFAULT_HONEYMOON = { days:[
-  { id:'hday_1',  date:'2026-11-16', items:[
-    { id:'hi_1_1', time:'14:05',       place:'인천 출발', memo:'' },
-    { id:'hi_1_2', time:'19:35',       place:'로마 도착', memo:'' }
-  ]},
-  { id:'hday_2',  date:'2026-11-17', items:[
-    { id:'hi_2_1', time:'14:00~16:00', place:'로마 시내 구경', memo:'트레비분수, 포로로마노, 콜로세움, 보르게세 공원' }
-  ]},
-  { id:'hday_3',  date:'2026-11-18', items:[
-    { id:'hi_3_1', time:'08:00~10:00', place:'바티칸 투어', memo:'' }
-  ]},
-  { id:'hday_4',  date:'2026-11-19', items:[
-    { id:'hi_4_1', time:'10:30',       place:'렌터카 수령',    memo:'' },
-    { id:'hi_4_2', time:'12:00~14:00', place:'막시무스의 집',  memo:'' }
-  ]},
-  { id:'hday_5',  date:'2026-11-20', items:[
-    { id:'hi_5_1', time:'14:00~16:00', place:'피사의 사탑', memo:'' }
-  ]},
-  { id:'hday_6',  date:'2026-11-21', items:[
-    { id:'hi_6_1', time:'08:00~10:00', place:'친퀘테레 당일치기', memo:'' }
-  ]},
-  { id:'hday_7',  date:'2026-11-22', items:[
-    { id:'hi_7_1', time:'10:00~12:00', place:'우피치 미술관 투어', memo:'' },
-    { id:'hi_7_2', time:'18:00~20:00', place:'미켈란젤로 언덕',   memo:'' }
-  ]},
-  { id:'hday_8',  date:'2026-11-23', items:[] },
-  { id:'hday_9',  date:'2026-11-24', items:[
-    { id:'hi_9_1', time:'10:00~12:00', place:'더 몰 (아울렛)', memo:'' }
-  ]},
-  { id:'hday_10', date:'2026-11-25', items:[
-    { id:'hi_10_1', time:'18:00~20:00', place:'렌터카 반납 (공항)', memo:'' },
-    { id:'hi_10_2', time:'22:00',       place:'로마 출발',          memo:'' }
-  ]},
-  { id:'hday_11', date:'2026-11-26', items:[
-    { id:'hi_11_1', time:'17:25', place:'인천 도착', memo:'' }
-  ]}
-]};
-
-const DEFAULT_BUDGET_ENTRIES = [
-  { desc:'더라움 결혼식',               amount:56815330, category:'예식장',    memo:'총 금액' },
-  { desc:'더채플앳 논현 위약금',         amount:300000,   category:'예식장',    memo:'위약금' },
-  { desc:'무이스튜디오 남산',            amount:2200000,  category:'스튜디오',  memo:'스튜디오 촬영' },
-  { desc:'위위 촬영 메이크업',           amount:220000,   category:'스튜디오',  memo:'촬영 메이크업' },
-  { desc:'로즈앤모어 플라워디자인',      amount:520000,   category:'스튜디오',  memo:'플디' },
-  { desc:'언아더데이 본식 스냅',         amount:1600000,  category:'스튜디오',  memo:'본식 스냅' },
-  { desc:'오브하우스 아이폰 스냅',       amount:520000,   category:'스튜디오',  memo:'아이폰 스냅' },
-  { desc:'잉필름 본식 DVD',             amount:680000,   category:'스튜디오',  memo:'본식 DVD' },
-  { desc:'케일라베넷 드레스',            amount:5040000,  category:'드레스/예복', memo:'총 금액' },
-  { desc:'아프롬 신랑 예복',             amount:2350000,  category:'드레스/예복', memo:'' },
-  { desc:'이탈리아 항공권',              amount:3173200,  category:'신혼여행',  memo:'항공권' },
-  { desc:'렌터카',                      amount:524556,   category:'신혼여행',  memo:'렌트' },
-  { desc:'부쉐론 웨딩밴드(신부)',        amount:3690000,  category:'예단/예물', memo:'신부' },
-  { desc:'부쉐론 웨딩밴드(신랑)',        amount:3840000,  category:'예단/예물', memo:'신랑' },
-  { desc:'도헤주얼리 가드링',            amount:790000,   category:'예단/예물', memo:'가드링' },
-  { desc:'까르띠에 예물 시계(신부)',     amount:10080000, category:'예단/예물', memo:'신부' },
-  { desc:'위위아뜰리에 본식 메이크업',   amount:770000,   category:'기타',     memo:'본식 메이크업' },
-  { desc:'헤어변형수연',                 amount:300000,   category:'기타',     memo:'헤어 변형' },
-  { desc:'베리굿 오주희 플래너',         amount:496800,   category:'기타',     memo:'계약금' },
-  { desc:'뷰티진동희 가족 꾸밈비(신랑)', amount:935000,   category:'기타',     memo:'신랑 가족' },
-  { desc:'가족 꾸밈비(신부)',            amount:1243000,  category:'기타',     memo:'신부 가족' },
-];
-
 const defaultData = [
   { id: 'venue', title: '예식장 & 장소', items: [
     { id: 'v1', text: '예식장 후보 리스트업',          tag:'Essential', daysBeforeWedding: 540 },
@@ -1687,26 +1617,10 @@ function renderHoneymoon() {
   if (!container) return;
   const days = (state.honeymoon && state.honeymoon.days) || [];
 
-  // 비용 요약 카드
-  const costRows = HONEYMOON_COSTS.map(c =>
-    `<div class="hm-cost-row">
-      <span class="hm-cost-label">${c.label}</span>
-      <span class="hm-cost-amount">${formatWon(c.amount)}</span>
-    </div>`
-  ).join('');
-
   let html = `
-    <div class="hm-cost-summary">
-      <div class="hm-cost-header">
-        <span class="hm-cost-header-label">이탈리아 11일 · 예상 총 비용</span>
-        <span class="hm-cost-total-num">${formatWon(HONEYMOON_TOTAL)}</span>
-      </div>
-      ${costRows}
-    </div>
     <div class="hm-header">
       <h2>신혼여행 일정</h2>
       <div style="display:flex;gap:8px;">
-        <button class="btn" onclick="loadDefaultHoneymoon()" title="이탈리아 기본 일정으로 재설정">↺ 재설정</button>
         <button class="btn primary" onclick="addHoneymoonDay()">+ Day 추가</button>
       </div>
     </div>
@@ -1714,11 +1628,8 @@ function renderHoneymoon() {
 
   if (days.length === 0) {
     html += `
-      <button class="hm-load-btn" onclick="loadDefaultHoneymoon()">
-        🇮🇹 &nbsp;이탈리아 11일 기본 일정 불러오기
-      </button>
       <div style="text-align:center;padding:1.5rem;color:var(--ink-light);font-size:13px;">
-        또는 위 + Day 추가 버튼으로 직접 입력하세요
+        + Day 추가 버튼으로 신혼여행 일정을 입력하세요
       </div>
     `;
   }
@@ -1762,12 +1673,6 @@ function renderHoneymoon() {
 
   container.innerHTML = html;
 }
-
-window.loadDefaultHoneymoon = function() {
-  if (!confirm('이탈리아 기본 일정으로 재설정할까요?\n현재 일정이 모두 교체됩니다.')) return;
-  state.honeymoon = JSON.parse(JSON.stringify(DEFAULT_HONEYMOON));
-  renderHoneymoon(); saveState();
-};
 
 window.addHoneymoonDay = function() {
   if (!state.honeymoon) state.honeymoon = {days:[]};
