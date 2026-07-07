@@ -806,7 +806,7 @@ body {
 
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
-import { getFirestore, doc, getDoc, setDoc, onSnapshot, updateDoc, arrayUnion } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+import { getFirestore, doc, getDocFromServer, setDoc, onSnapshot, updateDoc, arrayUnion } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
 import { getStorage, ref, uploadBytes, getDownloadURL, deleteObject } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-storage.js";
 import { getMessaging, getToken } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-messaging.js";
 
@@ -1839,18 +1839,21 @@ async function registerFCMToken() {
     return;
   }
 
-  // localStorage 캐시는 참고만 하고, 실제 저장 여부는 Firestore에서 직접 확인한다
-  // (캐시만 믿고 스킵하면 캐시가 남은 상태에서 문서가 재생성/초기화된 경우 토큰이 영영 저장되지 않는 버그가 생김)
+  // localStorage 캐시는 참고만 하고, 실제 저장 여부는 Firestore 서버에서 직접 확인한다.
+  // getDoc()은 이미 떠 있는 onSnapshot 리스너의 로컬 캐시나 아직 서버 확인이 안 된
+  // pending write를 그대로 반환할 수 있어 "있음"으로 오판할 수 있으므로,
+  // 로컬 캐시/미확정 write를 우회하고 서버에 강제로 묻는 getDocFromServer()를 사용한다.
   const cacheKey = `fcm_token_${coupleCode}`;
   const docRef = doc(db, 'weddings', coupleCode);
   let existsInFirestore = false;
   try {
-    const snap = await getDoc(docRef);
+    const snap = await getDocFromServer(docRef);
     const existingTokens = (snap.exists() && snap.data().fcmTokens) || [];
     existsInFirestore = existingTokens.some(t => t.token === token);
-    console.log('[FCM] Firestore 확인 결과:', existsInFirestore ? '있음' : '없음', `(fcmTokens 개수: ${existingTokens.length})`);
+    console.log('[FCM] Firestore 서버 확인 결과:', existsInFirestore ? '있음' : '없음', `(fcmTokens 개수: ${existingTokens.length})`);
   } catch(e) {
-    console.error('[FCM] Firestore 확인 실패:', e.code, e.message, e);
+    console.error('[FCM] Firestore 서버 확인 실패(오프라인 등):', e.code, e.message, e);
+    console.log('[FCM] 확인 실패 시 안전하게 저장을 시도함');
   }
 
   if (existsInFirestore) {
